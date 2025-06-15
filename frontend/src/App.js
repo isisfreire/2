@@ -9,18 +9,36 @@ function App() {
   const [formData, setFormData] = useState({
     initial_chicks: '',
     chick_cost_per_unit: '',
-    total_feed_consumed_kg: '',
-    feed_cost_per_kg: '',
-    chicks_died: '',
-    final_weight_per_chick_kg: '',
-    other_costs: '',
-    revenue_per_kg: ''
+    
+    // Feed phases
+    pre_starter_consumption: '',
+    pre_starter_cost_per_kg: '',
+    starter_consumption: '',
+    starter_cost_per_kg: '',
+    growth_consumption: '',
+    growth_cost_per_kg: '',
+    final_consumption: '',
+    final_cost_per_kg: '',
+    
+    // Additional costs
+    medicine_costs: '',
+    miscellaneous_costs: '',
+    cost_variations: '',
+    
+    // Mortality
+    chicks_died: ''
   });
+  
+  // State for removal batches (up to 15)
+  const [removalBatches, setRemovalBatches] = useState([
+    { quantity: '', total_weight_kg: '', age_days: '' }
+  ]);
   
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [history, setHistory] = useState([]);
+  const [activeTab, setActiveTab] = useState('basic');
 
   // Load calculation history on component mount
   useEffect(() => {
@@ -44,6 +62,25 @@ function App() {
     }));
   };
 
+  const handleRemovalBatchChange = (index, field, value) => {
+    const newBatches = [...removalBatches];
+    newBatches[index][field] = value;
+    setRemovalBatches(newBatches);
+  };
+
+  const addRemovalBatch = () => {
+    if (removalBatches.length < 15) {
+      setRemovalBatches([...removalBatches, { quantity: '', total_weight_kg: '', age_days: '' }]);
+    }
+  };
+
+  const removeRemovalBatch = (index) => {
+    if (removalBatches.length > 1) {
+      const newBatches = removalBatches.filter((_, i) => i !== index);
+      setRemovalBatches(newBatches);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,13 +91,43 @@ function App() {
       const numericData = {
         initial_chicks: parseInt(formData.initial_chicks) || 0,
         chick_cost_per_unit: parseFloat(formData.chick_cost_per_unit) || 0,
-        total_feed_consumed_kg: parseFloat(formData.total_feed_consumed_kg) || 0,
-        feed_cost_per_kg: parseFloat(formData.feed_cost_per_kg) || 0,
+        
+        pre_starter_feed: {
+          consumption_kg: parseFloat(formData.pre_starter_consumption) || 0,
+          cost_per_kg: parseFloat(formData.pre_starter_cost_per_kg) || 0
+        },
+        starter_feed: {
+          consumption_kg: parseFloat(formData.starter_consumption) || 0,
+          cost_per_kg: parseFloat(formData.starter_cost_per_kg) || 0
+        },
+        growth_feed: {
+          consumption_kg: parseFloat(formData.growth_consumption) || 0,
+          cost_per_kg: parseFloat(formData.growth_cost_per_kg) || 0
+        },
+        final_feed: {
+          consumption_kg: parseFloat(formData.final_consumption) || 0,
+          cost_per_kg: parseFloat(formData.final_cost_per_kg) || 0
+        },
+        
+        medicine_costs: parseFloat(formData.medicine_costs) || 0,
+        miscellaneous_costs: parseFloat(formData.miscellaneous_costs) || 0,
+        cost_variations: parseFloat(formData.cost_variations) || 0,
+        
         chicks_died: parseInt(formData.chicks_died) || 0,
-        final_weight_per_chick_kg: parseFloat(formData.final_weight_per_chick_kg) || 0,
-        other_costs: parseFloat(formData.other_costs) || 0,
-        revenue_per_kg: parseFloat(formData.revenue_per_kg) || 0
+        
+        removal_batches: removalBatches
+          .filter(batch => batch.quantity && batch.total_weight_kg && batch.age_days)
+          .map(batch => ({
+            quantity: parseInt(batch.quantity) || 0,
+            total_weight_kg: parseFloat(batch.total_weight_kg) || 0,
+            age_days: parseInt(batch.age_days) || 0
+          }))
       };
+
+      if (numericData.removal_batches.length === 0) {
+        setError('At least one removal batch is required');
+        return;
+      }
 
       const response = await axios.post(`${API}/calculate`, numericData);
       setResult(response.data);
@@ -79,13 +146,20 @@ function App() {
     setFormData({
       initial_chicks: '',
       chick_cost_per_unit: '',
-      total_feed_consumed_kg: '',
-      feed_cost_per_kg: '',
-      chicks_died: '',
-      final_weight_per_chick_kg: '',
-      other_costs: '',
-      revenue_per_kg: ''
+      pre_starter_consumption: '',
+      pre_starter_cost_per_kg: '',
+      starter_consumption: '',
+      starter_cost_per_kg: '',
+      growth_consumption: '',
+      growth_cost_per_kg: '',
+      final_consumption: '',
+      final_cost_per_kg: '',
+      medicine_costs: '',
+      miscellaneous_costs: '',
+      cost_variations: '',
+      chicks_died: ''
     });
+    setRemovalBatches([{ quantity: '', total_weight_kg: '', age_days: '' }]);
     setResult(null);
     setError('');
   };
@@ -97,169 +171,451 @@ function App() {
     }).format(value);
   };
 
+  // Chart component for cost breakdown
+  const CostBreakdownChart = ({ costBreakdown }) => {
+    const data = [
+      { name: 'Chicks', value: costBreakdown.chick_cost_percent, color: '#3B82F6' },
+      { name: 'Pre-starter Feed', value: costBreakdown.pre_starter_cost_percent, color: '#10B981' },
+      { name: 'Starter Feed', value: costBreakdown.starter_cost_percent, color: '#F59E0B' },
+      { name: 'Growth Feed', value: costBreakdown.growth_cost_percent, color: '#EF4444' },
+      { name: 'Final Feed', value: costBreakdown.final_cost_percent, color: '#8B5CF6' },
+      { name: 'Medicine', value: costBreakdown.medicine_cost_percent, color: '#06B6D4' },
+      { name: 'Miscellaneous', value: costBreakdown.miscellaneous_cost_percent, color: '#84CC16' },
+      { name: 'Cost Variations', value: costBreakdown.cost_variations_percent, color: '#F97316' }
+    ].filter(item => item.value > 0);
+
+    return (
+      <div className="bg-white p-4 rounded-lg">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Cost Breakdown</h3>
+        <div className="space-y-2">
+          {data.map((item, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center">
+                <div 
+                  className="w-4 h-4 rounded mr-2" 
+                  style={{ backgroundColor: item.color }}
+                ></div>
+                <span className="text-sm text-gray-700">{item.name}</span>
+              </div>
+              <div className="flex items-center">
+                <div 
+                  className="h-2 bg-gray-200 rounded mr-2" 
+                  style={{ width: '100px' }}
+                >
+                  <div 
+                    className="h-2 rounded" 
+                    style={{ 
+                      width: `${item.value}%`, 
+                      backgroundColor: item.color 
+                    }}
+                  ></div>
+                </div>
+                <span className="text-sm font-semibold text-gray-800 w-12 text-right">
+                  {item.value}%
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            🐔 Broiler Chicken Cost Calculator
+            🐔 Enhanced Broiler Chicken Cost Calculator
           </h1>
           <p className="text-lg text-gray-600">
-            Calculate production costs, feed conversion, and profitability for your broiler operation
+            Professional poultry production cost analysis with detailed feed phases and removal tracking
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
           {/* Input Form */}
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Production Data</h2>
-            
+          <div className="xl:col-span-2 bg-white rounded-xl shadow-lg p-6">
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
                 {error}
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Initial Number of Chicks
-                  </label>
-                  <input
-                    type="number"
-                    name="initial_chicks"
-                    value={formData.initial_chicks}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 1000"
-                    required
-                  />
-                </div>
+            {/* Tab Navigation */}
+            <div className="flex border-b mb-6">
+              <button
+                onClick={() => setActiveTab('basic')}
+                className={`px-4 py-2 font-medium ${activeTab === 'basic' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+              >
+                Basic Info
+              </button>
+              <button
+                onClick={() => setActiveTab('feed')}
+                className={`px-4 py-2 font-medium ${activeTab === 'feed' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+              >
+                Feed Phases
+              </button>
+              <button
+                onClick={() => setActiveTab('costs')}
+                className={`px-4 py-2 font-medium ${activeTab === 'costs' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+              >
+                Additional Costs
+              </button>
+              <button
+                onClick={() => setActiveTab('removals')}
+                className={`px-4 py-2 font-medium ${activeTab === 'removals' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+              >
+                Removals
+              </button>
+            </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Cost per Chick ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="chick_cost_per_unit"
-                    value={formData.chick_cost_per_unit}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 0.45"
-                    required
-                  />
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Basic Info Tab */}
+              {activeTab === 'basic' && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-gray-800">Basic Production Data</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Initial Number of Chicks *
+                      </label>
+                      <input
+                        type="number"
+                        name="initial_chicks"
+                        value={formData.initial_chicks}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 10000"
+                        required
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Total Feed Consumed (kg)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    name="total_feed_consumed_kg"
-                    value={formData.total_feed_consumed_kg}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 3500"
-                    required
-                  />
-                </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cost per Chick ($) *
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="chick_cost_per_unit"
+                        value={formData.chick_cost_per_unit}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 0.45"
+                        required
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Feed Cost per kg ($)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="feed_cost_per_kg"
-                    value={formData.feed_cost_per_kg}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 0.35"
-                    required
-                  />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Number of Chicks Died *
+                      </label>
+                      <input
+                        type="number"
+                        name="chicks_died"
+                        value={formData.chicks_died}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 250"
+                        required
+                      />
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Number of Chicks Died
-                  </label>
-                  <input
-                    type="number"
-                    name="chicks_died"
-                    value={formData.chicks_died}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 50"
-                    required
-                  />
+              {/* Feed Phases Tab */}
+              {activeTab === 'feed' && (
+                <div className="space-y-6">
+                  <h3 className="text-xl font-semibold text-gray-800">Feed Phases</h3>
+                  
+                  {/* Pre-starter Feed */}
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-blue-800 mb-3">Pre-starter Feed (0-10 days)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Consumption (kg)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          name="pre_starter_consumption"
+                          value={formData.pre_starter_consumption}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="e.g., 500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Cost per kg ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="pre_starter_cost_per_kg"
+                          value={formData.pre_starter_cost_per_kg}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="e.g., 0.65"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Starter Feed */}
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-green-800 mb-3">Starter Feed (10-24 days)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Consumption (kg)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          name="starter_consumption"
+                          value={formData.starter_consumption}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                          placeholder="e.g., 2500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Cost per kg ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="starter_cost_per_kg"
+                          value={formData.starter_cost_per_kg}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                          placeholder="e.g., 0.45"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Growth Feed */}
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-yellow-800 mb-3">Growth Feed (24-35 days)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Consumption (kg)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          name="growth_consumption"
+                          value={formData.growth_consumption}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          placeholder="e.g., 8000"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Cost per kg ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="growth_cost_per_kg"
+                          value={formData.growth_cost_per_kg}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                          placeholder="e.g., 0.40"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Final Feed */}
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-purple-800 mb-3">Final Feed (35+ days)</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Consumption (kg)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          name="final_consumption"
+                          value={formData.final_consumption}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="e.g., 12000"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Cost per kg ($)
+                        </label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          name="final_cost_per_kg"
+                          value={formData.final_cost_per_kg}
+                          onChange={handleInputChange}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                          placeholder="e.g., 0.35"
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Final Weight per Chick (kg)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="final_weight_per_chick_kg"
-                    value={formData.final_weight_per_chick_kg}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 2.5"
-                    required
-                  />
+              {/* Additional Costs Tab */}
+              {activeTab === 'costs' && (
+                <div className="space-y-4">
+                  <h3 className="text-xl font-semibold text-gray-800">Additional Costs</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Medicine & Vaccine Costs ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="medicine_costs"
+                        value={formData.medicine_costs}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 800"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Miscellaneous Costs ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="miscellaneous_costs"
+                        value={formData.miscellaneous_costs}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 500"
+                      />
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cost Variations ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="cost_variations"
+                        value={formData.cost_variations}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 300"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Additional cost adjustments or variations</p>
+                    </div>
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Other Costs ($) - Optional
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="other_costs"
-                    value={formData.other_costs}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 200"
-                  />
+              {/* Removals Tab */}
+              {activeTab === 'removals' && (
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-xl font-semibold text-gray-800">Removal Batches (35-50 days)</h3>
+                    <button
+                      type="button"
+                      onClick={addRemovalBatch}
+                      disabled={removalBatches.length >= 15}
+                      className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 disabled:opacity-50"
+                    >
+                      Add Batch ({removalBatches.length}/15)
+                    </button>
+                  </div>
+
+                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                    {removalBatches.map((batch, index) => (
+                      <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                        <div className="flex justify-between items-center mb-3">
+                          <h4 className="font-medium text-gray-700">Batch {index + 1}</h4>
+                          {removalBatches.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() => removeRemovalBatch(index)}
+                              className="text-red-600 hover:text-red-800 text-sm"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Quantity Removed
+                            </label>
+                            <input
+                              type="number"
+                              value={batch.quantity}
+                              onChange={(e) => handleRemovalBatchChange(index, 'quantity', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="e.g., 2000"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Total Weight (kg)
+                            </label>
+                            <input
+                              type="number"
+                              step="0.1"
+                              value={batch.total_weight_kg}
+                              onChange={(e) => handleRemovalBatchChange(index, 'total_weight_kg', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="e.g., 4800"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Age (days)
+                            </label>
+                            <input
+                              type="number"
+                              value={batch.age_days}
+                              onChange={(e) => handleRemovalBatchChange(index, 'age_days', e.target.value)}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                              placeholder="35-50"
+                              min="35"
+                              max="60"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+              )}
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Revenue per kg ($) - Optional
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    name="revenue_per_kg"
-                    value={formData.revenue_per_kg}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="e.g., 4.50"
-                  />
-                </div>
-              </div>
-
-              <div className="flex space-x-4 pt-4">
+              <div className="flex space-x-4 pt-6 border-t">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
+                  className="flex-1 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 font-medium"
                 >
-                  {loading ? 'Calculating...' : '📊 Calculate'}
+                  {loading ? 'Calculating...' : '📊 Calculate Enhanced Metrics'}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium"
                 >
                   Reset
                 </button>
@@ -269,87 +625,133 @@ function App() {
 
           {/* Results */}
           {result && (
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Calculation Results</h2>
-              
-              {/* Key Metrics */}
-              <div className="grid grid-cols-2 gap-4 mb-6">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-blue-600">Feed Conversion Ratio</h3>
-                  <p className="text-2xl font-bold text-blue-800">{result.calculation.feed_conversion_ratio}</p>
-                </div>
-                <div className="bg-red-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-red-600">Mortality Rate</h3>
-                  <p className="text-2xl font-bold text-red-800">{result.calculation.mortality_rate_percent}%</p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-green-600">Cost per kg</h3>
-                  <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.cost_per_kg)}</p>
-                </div>
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-purple-600">Total Weight Produced</h3>
-                  <p className="text-2xl font-bold text-purple-800">{result.calculation.total_weight_produced_kg} kg</p>
+            <div className="xl:col-span-1 space-y-6">
+              {/* Key Performance Metrics */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Key Performance Metrics</h2>
+                
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-blue-600">Feed Conversion Ratio</h3>
+                    <p className="text-2xl font-bold text-blue-800">{result.calculation.feed_conversion_ratio}</p>
+                  </div>
+                  <div className="bg-red-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-red-600">Mortality Rate</h3>
+                    <p className="text-2xl font-bold text-red-800">{result.calculation.mortality_rate_percent}%</p>
+                  </div>
+                  <div className="bg-green-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-green-600">Cost per kg</h3>
+                    <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.cost_per_kg)}</p>
+                  </div>
+                  <div className="bg-purple-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-purple-600">Weighted Avg Age</h3>
+                    <p className="text-2xl font-bold text-purple-800">{result.calculation.weighted_average_age} days</p>
+                  </div>
+                  <div className="bg-yellow-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-yellow-600">Daily Weight Gain</h3>
+                    <p className="text-2xl font-bold text-yellow-800">{result.calculation.daily_weight_gain} kg</p>
+                  </div>
                 </div>
               </div>
 
-              {/* Financial Summary */}
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Financial Summary</h3>
-                <div className="space-y-2">
+              {/* Production Summary */}
+              <div className="bg-white rounded-xl shadow-lg p-6">
+                <h2 className="text-xl font-semibold text-gray-800 mb-4">Production Summary</h2>
+                <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
-                    <span>Total Cost:</span>
-                    <span className="font-semibold">{formatCurrency(result.calculation.total_cost)}</span>
+                    <span className="text-gray-600">Initial Chicks:</span>
+                    <span className="font-semibold">{result.calculation.input_data.initial_chicks.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Total Revenue:</span>
-                    <span className="font-semibold">{formatCurrency(result.calculation.total_revenue)}</span>
+                    <span className="text-gray-600">Surviving Chicks:</span>
+                    <span className="font-semibold">{result.calculation.surviving_chicks.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between border-t pt-2">
-                    <span className="font-semibold">Profit/Loss:</span>
-                    <span className={`font-bold ${result.calculation.profit_loss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                      {formatCurrency(result.calculation.profit_loss)}
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Removed Chicks:</span>
+                    <span className="font-semibold">{result.calculation.removed_chicks.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Missing Chicks:</span>
+                    <span className={`font-semibold ${result.calculation.missing_chicks > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {result.calculation.missing_chicks.toLocaleString()}
                     </span>
                   </div>
-                </div>
-              </div>
-
-              {/* Production Details */}
-              <div className="bg-gray-50 p-4 rounded-lg mb-6">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Production Details</h3>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="text-gray-600">Initial Chicks:</span>
-                    <span className="ml-2 font-semibold">{result.calculation.initial_chicks}</span>
+                  <div className="flex justify-between border-t pt-2">
+                    <span className="text-gray-600">Total Weight Produced:</span>
+                    <span className="font-semibold">{result.calculation.total_weight_produced_kg.toLocaleString()} kg</span>
                   </div>
-                  <div>
-                    <span className="text-gray-600">Surviving Chicks:</span>
-                    <span className="ml-2 font-semibold">{result.calculation.surviving_chicks}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Feed Consumed:</span>
-                    <span className="ml-2 font-semibold">{result.calculation.total_feed_consumed_kg} kg</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-600">Avg Final Weight:</span>
-                    <span className="ml-2 font-semibold">{result.calculation.final_weight_per_chick_kg} kg</span>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Total Feed Consumed:</span>
+                    <span className="font-semibold">{result.calculation.total_feed_consumed_kg.toLocaleString()} kg</span>
                   </div>
                 </div>
               </div>
 
-              {/* Insights */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">Business Insights</h3>
-                <div className="space-y-2">
-                  {result.insights.map((insight, index) => (
-                    <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
-                      {insight}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Cost Breakdown Chart */}
+              <CostBreakdownChart costBreakdown={result.calculation.cost_breakdown} />
             </div>
           )}
         </div>
+
+        {/* Full Results Display */}
+        {result && (
+          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Financial Summary */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Financial Breakdown</h2>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span>Chick Cost:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.chick_cost)} ({result.calculation.cost_breakdown.chick_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Pre-starter Feed:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.pre_starter_cost)} ({result.calculation.cost_breakdown.pre_starter_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Starter Feed:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.starter_cost)} ({result.calculation.cost_breakdown.starter_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Growth Feed:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.growth_cost)} ({result.calculation.cost_breakdown.growth_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Final Feed:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.final_cost)} ({result.calculation.cost_breakdown.final_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Medicine:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.medicine_cost)} ({result.calculation.cost_breakdown.medicine_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Miscellaneous:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.miscellaneous_cost)} ({result.calculation.cost_breakdown.miscellaneous_cost_percent}%)</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Cost Variations:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.cost_variations)} ({result.calculation.cost_breakdown.cost_variations_percent}%)</span>
+                </div>
+                <div className="flex justify-between border-t pt-2 font-bold text-lg">
+                  <span>Total Cost:</span>
+                  <span>{formatCurrency(result.calculation.total_cost)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Business Insights */}
+            <div className="bg-white rounded-xl shadow-lg p-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Business Insights</h2>
+              <div className="space-y-3">
+                {result.insights.map((insight, index) => (
+                  <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
+                    {insight}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Calculation History */}
         {history.length > 0 && (
@@ -363,8 +765,9 @@ function App() {
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Chicks</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FCR</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mortality %</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Age</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cost/kg</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Profit/Loss</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Missing</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -373,12 +776,13 @@ function App() {
                       <td className="px-4 py-2 text-sm text-gray-600">
                         {new Date(calc.created_at).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.initial_chicks}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.input_data.initial_chicks.toLocaleString()}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{calc.feed_conversion_ratio}</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{calc.mortality_rate_percent}%</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.weighted_average_age} days</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{formatCurrency(calc.cost_per_kg)}</td>
-                      <td className={`px-4 py-2 text-sm font-semibold ${calc.profit_loss >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        {formatCurrency(calc.profit_loss)}
+                      <td className={`px-4 py-2 text-sm font-semibold ${calc.missing_chicks > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                        {calc.missing_chicks}
                       </td>
                     </tr>
                   ))}
