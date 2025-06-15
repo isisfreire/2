@@ -64,8 +64,8 @@ class BroilerCalculatorAPITest(unittest.TestCase):
         # Mortality rate should be 5%
         self.assertAlmostEqual(calculation["mortality_rate_percent"], 5.0, delta=0.01)
         
-        # Total cost = (1000 * 0.45) + (3500 * 0.35) + 200 = $1675
-        self.assertAlmostEqual(calculation["total_cost"], 1675.0, delta=0.01)
+        # Total cost = (1000 * 0.45) + (3500 * 0.35) + 200 = $1875
+        self.assertAlmostEqual(calculation["total_cost"], 1875.0, delta=0.01)
         
         # Cost per kg = 1675 / 2375 = $0.705
         self.assertAlmostEqual(calculation["cost_per_kg"], 0.71, delta=0.01)
