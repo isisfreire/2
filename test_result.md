@@ -107,39 +107,48 @@ user_problem_statement: "Create an application to calculate the costs and costs 
 backend:
   - task: "Core broiler calculation API endpoint"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented comprehensive broiler calculation logic with FCR, mortality rate, cost per kg, and profitability analysis. Added input validation and business insights generation."
+      - working: true
+        agent: "testing"
+        comment: "Fixed issue with duplicate revenue_per_kg parameter in BroilerCalculation creation. Fixed validation error handling to properly return 400 status codes instead of 500. All calculation endpoints now working correctly with accurate FCR, mortality rate, cost per kg, and profit calculations."
 
   - task: "Data models for broiler calculations"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Created Pydantic models for input validation and calculation results. Includes all required fields like chicks, feed, mortality, weights, and costs."
+      - working: true
+        agent: "testing"
+        comment: "Verified all data models are working correctly. BroilerCalculation, BroilerCalculationInput, and CalculationResult models properly handle all required fields and calculated values."
 
   - task: "Business logic for poultry farming calculations"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented core formulas: FCR = Feed/Weight, Mortality % = Deaths/Initial * 100, Cost per kg = Total Cost/Weight Produced. Added insights generation based on industry standards."
+      - working: true
+        agent: "testing"
+        comment: "Verified all business logic calculations are accurate. FCR, mortality rate, cost per kg, and profit/loss calculations all produce correct results. Insights generation provides meaningful feedback based on industry standards."
 
 frontend:
   - task: "Broiler calculation form interface"
@@ -196,3 +205,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Built complete broiler chicken cost calculator with comprehensive business logic. Core features include FCR calculation, mortality rate analysis, cost per kg computation, and profitability insights. Ready for backend testing to validate calculation accuracy and API functionality."
+  - agent: "testing"
+    message: "Completed thorough testing of the broiler chicken cost calculator backend API. Fixed two issues: 1) Duplicate revenue_per_kg parameter in BroilerCalculation creation, and 2) Validation error handling to properly return 400 status codes instead of 500. Created comprehensive test suite in backend_test.py covering normal scenarios, edge cases, and validation. All tests are now passing with accurate calculations for FCR, mortality rate, cost per kg, and profit/loss."
