@@ -48,8 +48,6 @@ class BroilerCalculatorAPITest(unittest.TestCase):
         }
         
         response = requests.post(f"{API_URL}/calculate", json=payload)
-        print(f"Response status: {response.status_code}")
-        print(f"Response content: {response.text}")
         self.assertEqual(response.status_code, 200)
         
         data = response.json()
