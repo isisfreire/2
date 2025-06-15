@@ -67,8 +67,8 @@ class BroilerCalculatorAPITest(unittest.TestCase):
         # Total cost = (1000 * 0.45) + (3500 * 0.35) + 200 = $1875
         self.assertAlmostEqual(calculation["total_cost"], 1875.0, delta=0.01)
         
-        # Cost per kg = 1675 / 2375 = $0.705
-        self.assertAlmostEqual(calculation["cost_per_kg"], 0.71, delta=0.01)
+        # Cost per kg = 1875 / 2375 = $0.79
+        self.assertAlmostEqual(calculation["cost_per_kg"], 0.79, delta=0.01)
         
         # Total revenue = 2375 * 4.50 = $10,687.50
         self.assertAlmostEqual(calculation["total_revenue"], 10687.5, delta=0.01)
