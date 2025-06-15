@@ -99,7 +99,6 @@ def calculate_broiler_metrics(input_data: BroilerCalculationInput) -> BroilerCal
         mortality_rate_percent=round(mortality_rate_percent, 2),
         total_cost=round(total_cost, 2),
         cost_per_kg=round(cost_per_kg, 2),
-        revenue_per_kg=input_data.revenue_per_kg,
         total_revenue=round(total_revenue, 2),
         profit_loss=round(profit_loss, 2)
     )
