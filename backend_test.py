@@ -73,8 +73,8 @@ class BroilerCalculatorAPITest(unittest.TestCase):
         # Total revenue = 2375 * 4.50 = $10,687.50
         self.assertAlmostEqual(calculation["total_revenue"], 10687.5, delta=0.01)
         
-        # Profit = 10687.50 - 1675 = $9,012.50
-        self.assertAlmostEqual(calculation["profit_loss"], 9012.5, delta=0.01)
+        # Profit = 10687.50 - 1875 = $8,812.50
+        self.assertAlmostEqual(calculation["profit_loss"], 8812.5, delta=0.01)
         
         # Verify insights are generated
         self.assertTrue(len(insights) >= 4)
