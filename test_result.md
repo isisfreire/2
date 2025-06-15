@@ -202,8 +202,92 @@ test_plan:
   test_all: false
   test_priority: "high_first"
 
+  - task: "Enhanced 4-phase feed tracking system"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented detailed feed phase tracking: pre-starter, starter, growth, and final feeds with separate consumption and cost tracking. Added cost breakdown analysis with percentages."
+
+  - task: "15-batch removal tracking with age calculations"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented detailed removal batch tracking (up to 15 batches) with quantity, weight, and age (35-60 days). Added weighted average age calculation and missing chicks tracking."
+
+  - task: "Medicine and miscellaneous cost tracking"
+    implemented: true
+    working: "NA"
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added separate fields for medicine costs, miscellaneous costs, and cost variations. Included in total cost calculation and breakdown analysis."
+
+frontend:
+  - task: "Enhanced tabbed interface for complex data entry"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Created tabbed interface with Basic Info, Feed Phases, Additional Costs, and Removals tabs for organized data entry."
+
+  - task: "15 removal batch management interface"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Built dynamic removal batch interface allowing up to 15 batches with add/remove functionality. Each batch tracks quantity, weight, and age."
+
+  - task: "Cost breakdown visualization"
+    implemented: true
+    working: "NA"
+    file: "/app/frontend/src/App.js"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added cost breakdown chart component showing percentage distribution of all cost categories with visual bars and color coding."
+
+test_plan:
+  current_focus:
+    - "Enhanced 4-phase feed tracking system"
+    - "15-batch removal tracking with age calculations"
+    - "Medicine and miscellaneous cost tracking"
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
 agent_communication:
   - agent: "main"
     message: "Built complete broiler chicken cost calculator with comprehensive business logic. Core features include FCR calculation, mortality rate analysis, cost per kg computation, and profitability insights. Ready for backend testing to validate calculation accuracy and API functionality."
+  - agent: "main"
+    message: "Enhanced the calculator with professional features: 4-phase feed tracking (pre-starter, starter, growth, final), 15 removal batches with age tracking (35-60 days), medicine/miscellaneous costs, weighted average age calculation, missing chicks tracking, and cost breakdown visualization. Ready for enhanced backend testing."
   - agent: "testing"
     message: "Completed thorough testing of the broiler chicken cost calculator backend API. Fixed two issues: 1) Duplicate revenue_per_kg parameter in BroilerCalculation creation, and 2) Validation error handling to properly return 400 status codes instead of 500. Created comprehensive test suite in backend_test.py covering normal scenarios, edge cases, and validation. All tests are now passing with accurate calculations for FCR, mortality rate, cost per kg, and profit/loss."
