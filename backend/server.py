@@ -161,17 +161,17 @@ async def calculate_broiler_costs(input_data: BroilerCalculationInput):
     """
     Calculate broiler chicken production costs and metrics
     """
+    # Validate input
+    if input_data.initial_chicks <= 0:
+        raise HTTPException(status_code=400, detail="Initial chicks must be greater than 0")
+    if input_data.chicks_died > input_data.initial_chicks:
+        raise HTTPException(status_code=400, detail="Chicks died cannot be more than initial chicks")
+    if input_data.total_feed_consumed_kg <= 0:
+        raise HTTPException(status_code=400, detail="Feed consumed must be greater than 0")
+    if input_data.final_weight_per_chick_kg <= 0:
+        raise HTTPException(status_code=400, detail="Final weight per chick must be greater than 0")
+    
     try:
-        # Validate input
-        if input_data.initial_chicks <= 0:
-            raise HTTPException(status_code=400, detail="Initial chicks must be greater than 0")
-        if input_data.chicks_died > input_data.initial_chicks:
-            raise HTTPException(status_code=400, detail="Chicks died cannot be more than initial chicks")
-        if input_data.total_feed_consumed_kg <= 0:
-            raise HTTPException(status_code=400, detail="Feed consumed must be greater than 0")
-        if input_data.final_weight_per_chick_kg <= 0:
-            raise HTTPException(status_code=400, detail="Final weight per chick must be greater than 0")
-        
         # Calculate metrics
         calculation = calculate_broiler_metrics(input_data)
         
