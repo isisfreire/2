@@ -150,6 +150,51 @@ backend:
         agent: "testing"
         comment: "Verified all business logic calculations are accurate. FCR, mortality rate, cost per kg, and profit/loss calculations all produce correct results. Insights generation provides meaningful feedback based on industry standards."
 
+  - task: "Enhanced 4-phase feed tracking system"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented detailed feed phase tracking: pre-starter, starter, growth, and final feeds with separate consumption and cost tracking. Added cost breakdown analysis with percentages."
+      - working: true
+        agent: "testing"
+        comment: "Verified the 4-phase feed tracking system works correctly. Each phase (pre-starter, starter, growth, final) properly tracks consumption and cost. Cost breakdown analysis with percentages is accurate and sums to 100%. All feed-related calculations are working as expected."
+
+  - task: "15-batch removal tracking with age calculations"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented detailed removal batch tracking (up to 15 batches) with quantity, weight, and age (35-60 days). Added weighted average age calculation and missing chicks tracking."
+      - working: true
+        agent: "testing"
+        comment: "Verified the batch removal tracking system works correctly. The API properly handles multiple batches with different ages, weights, and quantities. Weighted average age calculation is accurate. Missing chicks tracking (surviving - removed) works correctly. Age validation properly rejects ages outside the 35-60 day range."
+
+  - task: "Medicine and miscellaneous cost tracking"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added separate fields for medicine costs, miscellaneous costs, and cost variations. Included in total cost calculation and breakdown analysis."
+      - working: true
+        agent: "testing"
+        comment: "Verified medicine costs, miscellaneous costs, and cost variations are properly tracked and included in the total cost calculation. Cost breakdown analysis correctly includes these costs with accurate percentages."
+
 frontend:
   - task: "Broiler calculation form interface"
     implemented: true
@@ -187,58 +232,6 @@ frontend:
         agent: "main"
         comment: "Added history table showing recent calculations with key metrics for comparison and tracking."
 
-metadata:
-  created_by: "main_agent"
-  version: "1.0"
-  test_sequence: 1
-  run_ui: false
-
-test_plan:
-  current_focus:
-    - "Core broiler calculation API endpoint"
-    - "Data models for broiler calculations"
-    - "Business logic for poultry farming calculations"
-  stuck_tasks: []
-  test_all: false
-  test_priority: "high_first"
-
-  - task: "Enhanced 4-phase feed tracking system"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Implemented detailed feed phase tracking: pre-starter, starter, growth, and final feeds with separate consumption and cost tracking. Added cost breakdown analysis with percentages."
-
-  - task: "15-batch removal tracking with age calculations"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "high"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Implemented detailed removal batch tracking (up to 15 batches) with quantity, weight, and age (35-60 days). Added weighted average age calculation and missing chicks tracking."
-
-  - task: "Medicine and miscellaneous cost tracking"
-    implemented: true
-    working: "NA"
-    file: "/app/backend/server.py"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: true
-    status_history:
-      - working: "NA"
-        agent: "main"
-        comment: "Added separate fields for medicine costs, miscellaneous costs, and cost variations. Included in total cost calculation and breakdown analysis."
-
-frontend:
   - task: "Enhanced tabbed interface for complex data entry"
     implemented: true
     working: "NA"
@@ -275,6 +268,12 @@ frontend:
         agent: "main"
         comment: "Added cost breakdown chart component showing percentage distribution of all cost categories with visual bars and color coding."
 
+metadata:
+  created_by: "main_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
 test_plan:
   current_focus:
     - "Enhanced 4-phase feed tracking system"
@@ -291,3 +290,5 @@ agent_communication:
     message: "Enhanced the calculator with professional features: 4-phase feed tracking (pre-starter, starter, growth, final), 15 removal batches with age tracking (35-60 days), medicine/miscellaneous costs, weighted average age calculation, missing chicks tracking, and cost breakdown visualization. Ready for enhanced backend testing."
   - agent: "testing"
     message: "Completed thorough testing of the broiler chicken cost calculator backend API. Fixed two issues: 1) Duplicate revenue_per_kg parameter in BroilerCalculation creation, and 2) Validation error handling to properly return 400 status codes instead of 500. Created comprehensive test suite in backend_test.py covering normal scenarios, edge cases, and validation. All tests are now passing with accurate calculations for FCR, mortality rate, cost per kg, and profit/loss."
+  - agent: "testing"
+    message: "Completed thorough testing of the enhanced broiler chicken cost calculator backend API. Created a comprehensive test suite in backend_test.py that tests all the new features: 4-phase feed tracking, 15-batch removal tracking with age calculations, medicine and miscellaneous cost tracking, weighted average age calculation, missing chicks tracking, and cost breakdown percentages. All tests are now passing. The API correctly validates age ranges (35-60 days), calculates weighted average age, tracks missing chicks, and provides accurate cost breakdowns with percentages that sum to 100%. The professional scenario with 10,000 chicks and multiple removal batches works correctly."
