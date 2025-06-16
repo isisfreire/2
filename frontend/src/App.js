@@ -249,7 +249,7 @@ function App() {
       }
 
       if (numericData.removal_batches.length === 0) {
-        setError('At least one removal batch is required');
+        setError(t.atLeastOneRemovalBatch);
         return;
       }
 
