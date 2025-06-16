@@ -35,7 +35,7 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         response = requests.get(f"{API_URL}/")
         self.assertEqual(response.status_code, 200)
         data = response.json()
-        self.assertEqual(data["message"], "Enhanced Broiler Chicken Cost Calculator API")
+        self.assertEqual(data["message"], "Enhanced Broiler Farm Management System API")
 
     def test_professional_scenario(self):
         """
