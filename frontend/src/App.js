@@ -1609,7 +1609,7 @@ function App() {
               {activeTab === 'removals' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-800">Removal Batches (35-50 days)</h3>
+                    <h3 className="text-xl font-semibold text-gray-800">Removal Batches</h3>
                     <button
                       type="button"
                       onClick={addRemovalBatch}
