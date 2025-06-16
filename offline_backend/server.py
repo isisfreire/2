@@ -967,6 +967,9 @@ async def delete_calculation(calculation_id: str):
         raise HTTPException(status_code=404, detail="Calculation not found")
     return {"message": "Calculation deleted successfully"}
 
+# Include the API router
+app.include_router(api_router)
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
