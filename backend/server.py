@@ -55,6 +55,10 @@ class BroilerCalculationInput(BaseModel):
     shed_number: str
     handler_name: str
     
+    # Batch dates
+    entry_date: datetime  # When chicks arrived
+    exit_date: datetime   # When batch was completed
+    
     # Basic data
     initial_chicks: int
     chick_cost_per_unit: float
