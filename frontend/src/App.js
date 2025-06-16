@@ -48,8 +48,11 @@ function App() {
   const [handlers, setHandlers] = useState([]);
   const [handlerPerformance, setHandlerPerformance] = useState([]);
   const [sheds, setSheds] = useState([]);
+  const [allHandlers, setAllHandlers] = useState([]);
+  const [allSheds, setAllSheds] = useState([]);
   const [activeTab, setActiveTab] = useState('basic');
   const [showPerformanceTab, setShowPerformanceTab] = useState(false);
+  const [showAdminTab, setShowAdminTab] = useState(false);
 
   // Load calculation history on component mount
   useEffect(() => {
