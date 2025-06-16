@@ -128,7 +128,51 @@ class BroilerCalculation(BaseModel):
 class Handler(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
     name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    hire_date: Optional[datetime] = None
+    notes: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class HandlerCreate(BaseModel):
+    name: str
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    hire_date: Optional[datetime] = None
+    notes: Optional[str] = None
+
+class HandlerUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    hire_date: Optional[datetime] = None
+    notes: Optional[str] = None
+
+class Shed(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    number: str
+    capacity: Optional[int] = None
+    location: Optional[str] = None
+    construction_date: Optional[datetime] = None
+    status: Optional[str] = "active"  # active, maintenance, inactive
+    notes: Optional[str] = None
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+class ShedCreate(BaseModel):
+    number: str
+    capacity: Optional[int] = None
+    location: Optional[str] = None
+    construction_date: Optional[datetime] = None
+    status: Optional[str] = "active"
+    notes: Optional[str] = None
+
+class ShedUpdate(BaseModel):
+    number: Optional[str] = None
+    capacity: Optional[int] = None
+    location: Optional[str] = None
+    construction_date: Optional[datetime] = None
+    status: Optional[str] = None
+    notes: Optional[str] = None
 
 class HandlerPerformance(BaseModel):
     handler_name: str
