@@ -7,6 +7,11 @@ const API = `${BACKEND_URL}/api`;
 
 function App() {
   const [formData, setFormData] = useState({
+    // Batch identification
+    batch_id: '',
+    shed_number: '',
+    handler_name: '',
+    
     initial_chicks: '',
     chick_cost_per_unit: '',
     
@@ -20,10 +25,12 @@ function App() {
     final_consumption: '',
     final_cost_per_kg: '',
     
-    // Additional costs
+    // Enhanced costs
     medicine_costs: '',
     miscellaneous_costs: '',
     cost_variations: '',
+    sawdust_bedding_cost: '',
+    chicken_bedding_sale_revenue: '',
     
     // Mortality
     chicks_died: ''
