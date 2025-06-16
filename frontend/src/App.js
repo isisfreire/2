@@ -884,13 +884,20 @@ function App() {
                   <td className="px-4 py-2 text-sm text-gray-900">{batch.mortality_percent}%</td>
                   <td className="px-4 py-2 text-sm text-gray-900">{formatCurrency(batch.cost_per_kg)}</td>
                   <td className="px-4 py-2 text-sm">
-                    <div className="flex space-x-2">
+                    <div className="flex space-x-1">
                       <button
                         onClick={() => loadBatchDetails(batch.batch_id)}
                         className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
                         title="View/Edit Batch"
                       >
                         📝 Edit
+                      </button>
+                      <button
+                        onClick={() => regeneratePDF(batch.batch_id)}
+                        className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
+                        title="Generate & Download PDF"
+                      >
+                        🖨️ Print
                       </button>
                       <button
                         onClick={() => deleteBatch(batch.batch_id)}
