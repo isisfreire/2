@@ -23,6 +23,9 @@ from reportlab.lib.enums import TA_CENTER
 # Import our SQLite database
 from database import db
 
+# Import translations
+from translations_pt import BACKEND_TRANSLATIONS as t
+
 # Create FastAPI app
 app = FastAPI(title="Offline Broiler Farm Management System")
 api_router = APIRouter(prefix="/api")
@@ -305,63 +308,69 @@ def calculate_enhanced_broiler_metrics(input_data: BroilerCalculationInput) -> B
 
 def generate_enhanced_insights(calculation: BroilerCalculation) -> List[str]:
     """
-    Generate enhanced business insights from calculation results
+    Generate enhanced business insights from calculation results (in Portuguese)
     """
     insights = []
     
     # Feed conversion analysis
     if calculation.feed_conversion_ratio <= 1.6:
-        insights.append("🎯 Excellent FCR! Your feed efficiency is outstanding.")
+        insights.append(t["excellent_fcr"])
     elif calculation.feed_conversion_ratio <= 1.8:
-        insights.append("✅ Very good FCR. Feed management is effective.")
+        insights.append(t["very_good_fcr"])
     elif calculation.feed_conversion_ratio <= 2.2:
-        insights.append("⚠️ FCR is acceptable but could be improved with better feed management.")
+        insights.append(t["acceptable_fcr"])
     else:
-        insights.append("🚨 High FCR indicates poor feed efficiency. Review feed quality and management.")
+        insights.append(t["poor_fcr"])
     
     # Mortality analysis
     if calculation.mortality_rate_percent <= 3:
-        insights.append("🏆 Excellent mortality rate! Your flock management is superb.")
+        insights.append(t["excellent_mortality"])
     elif calculation.mortality_rate_percent <= 7:
-        insights.append("👍 Good mortality rate. Flock health management is effective.")
+        insights.append(t["good_mortality"])
     elif calculation.mortality_rate_percent <= 12:
-        insights.append("⚠️ Moderate mortality. Consider improving health protocols.")
+        insights.append(t["moderate_mortality"])
     else:
-        insights.append("🚨 High mortality rate. Urgent review of health management needed.")
+        insights.append(t["high_mortality"])
     
     # Daily weight gain analysis
     if calculation.daily_weight_gain >= 0.065:
-        insights.append("🚀 Excellent daily weight gain! Birds are growing optimally.")
+        insights.append(t["excellent_weight_gain"])
     elif calculation.daily_weight_gain >= 0.055:
-        insights.append("✅ Good daily weight gain. Growth performance is satisfactory.")
+        insights.append(t["good_weight_gain"])
     elif calculation.daily_weight_gain >= 0.045:
-        insights.append("⚠️ Moderate weight gain. Consider nutrition optimization.")
+        insights.append(t["moderate_weight_gain"])
     else:
-        insights.append("🚨 Low daily weight gain. Review nutrition and management practices.")
+        insights.append(t["low_weight_gain"])
     
     # Cost efficiency analysis
     if calculation.net_cost_per_kg <= 1.5:
-        insights.append("💰 Excellent cost efficiency! Very profitable operation.")
+        insights.append(t["excellent_cost_efficiency"])
     elif calculation.net_cost_per_kg <= 2.0:
-        insights.append("💚 Good cost management. Solid profit margins.")
+        insights.append(t["good_cost_management"])
     elif calculation.net_cost_per_kg <= 2.5:
-        insights.append("⚠️ Moderate costs. Look for optimization opportunities.")
+        insights.append(t["moderate_costs"])
     else:
-        insights.append("🚨 High production costs. Review all cost components.")
+        insights.append(t["high_costs"])
     
     # Missing chicks analysis
     if calculation.missing_chicks > 0:
         missing_percent = (calculation.missing_chicks / calculation.input_data.initial_chicks) * 100
         if missing_percent > 5:
-            insights.append(f"⚠️ {calculation.missing_chicks} missing chicks ({missing_percent:.1f}%). Investigate potential issues.")
+            insights.append(t["missing_chicks_warning"].format(
+                missing=calculation.missing_chicks, 
+                percent=f"{missing_percent:.1f}"
+            ))
         else:
-            insights.append(f"📊 {calculation.missing_chicks} missing chicks ({missing_percent:.1f}%) - within acceptable range.")
+            insights.append(t["missing_chicks_acceptable"].format(
+                missing=calculation.missing_chicks, 
+                percent=f"{missing_percent:.1f}"
+            ))
     
     # Age analysis
     if calculation.weighted_average_age < 35:
-        insights.append("⏰ Early harvesting detected. Consider market timing optimization.")
+        insights.append(t["early_harvesting"])
     elif calculation.weighted_average_age > 50:
-        insights.append("⏰ Extended growth period. Analyze cost-benefit of longer cycles.")
+        insights.append(t["extended_growth"])
     
     return insights
 
@@ -479,9 +488,10 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
     )
     
     # Title and Header
-    story.append(Paragraph("BROILER BATCH CLOSURE REPORT", title_style))
+    story.append(Paragraph(t["batch_closure_report"], title_style))
     story.append(Spacer(1, 10))
-    story.append(Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", styles['Normal']))
+    current_time = datetime.now().strftime('%d de %B de %Y às %H:%M')
+    story.append(Paragraph(t["generated_on"].format(date=current_time), styles['Normal']))
     story.append(Spacer(1, 20))
     
     # Batch Information
@@ -639,8 +649,8 @@ async def calculate_broiler_costs(input_data: BroilerCalculationInput):
         pdf_filename = generate_pdf_report(calculation)
         
         # Add export info to insights
-        insights.append(f"📄 JSON report exported as: {json_filename}")
-        insights.append(f"📄 PDF report exported as: {pdf_filename}")
+        insights.append(t["json_exported"].format(filename=json_filename))
+        insights.append(t["pdf_exported"].format(filename=pdf_filename))
         
         return CalculationResult(calculation=calculation, insights=insights)
         
