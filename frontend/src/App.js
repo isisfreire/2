@@ -165,6 +165,8 @@ function App() {
         batch_id: formData.batch_id.trim(),
         shed_number: formData.shed_number.trim(),
         handler_name: formData.handler_name.trim(),
+        entry_date: formData.entry_date,
+        exit_date: formData.exit_date,
         
         initial_chicks: parseInt(formData.initial_chicks) || 0,
         chick_cost_per_unit: parseFloat(formData.chick_cost_per_unit) || 0,
