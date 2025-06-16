@@ -568,34 +568,40 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
     story.append(prod_table)
     story.append(Spacer(1, 20))
     
-    # Financial Summary
-    story.append(Paragraph("FINANCIAL SUMMARY", heading_style))
+    # Financial Summary - Enhanced with all cost details
+    story.append(Paragraph("COMPLETE FINANCIAL BREAKDOWN", heading_style))
+    
+    # Detailed cost breakdown
     financial_data = [
-        ['Cost Category', 'Amount', 'Percentage'],
-        ['Chick Cost', f"${calculation.cost_breakdown.chick_cost:.2f}", f"{calculation.cost_breakdown.chick_cost_percent}%"],
-        ['Pre-starter Feed', f"${calculation.cost_breakdown.pre_starter_cost:.2f}", f"{calculation.cost_breakdown.pre_starter_cost_percent}%"],
-        ['Starter Feed', f"${calculation.cost_breakdown.starter_cost:.2f}", f"{calculation.cost_breakdown.starter_cost_percent}%"],
-        ['Growth Feed', f"${calculation.cost_breakdown.growth_cost:.2f}", f"{calculation.cost_breakdown.growth_cost_percent}%"],
-        ['Final Feed', f"${calculation.cost_breakdown.final_cost:.2f}", f"{calculation.cost_breakdown.final_cost_percent}%"],
-        ['Medicine', f"${calculation.cost_breakdown.medicine_cost:.2f}", f"{calculation.cost_breakdown.medicine_cost_percent}%"],
-        ['Miscellaneous', f"${calculation.cost_breakdown.miscellaneous_cost:.2f}", f"{calculation.cost_breakdown.miscellaneous_cost_percent}%"],
-        ['Sawdust Bedding', f"${calculation.cost_breakdown.sawdust_bedding_cost:.2f}", f"{calculation.cost_breakdown.sawdust_bedding_cost_percent}%"],
-        ['Cost Variations', f"${calculation.cost_breakdown.cost_variations:.2f}", f"{calculation.cost_breakdown.cost_variations_percent}%"],
-        ['', '', ''],
-        ['TOTAL COST', f"${calculation.total_cost:.2f}", '100%'],
-        ['Bedding Revenue', f"-${calculation.total_revenue:.2f}", ''],
-        ['NET COST', f"${calculation.total_cost - calculation.total_revenue:.2f}", ''],
+        ['Cost Category', 'Consumption/Qty', 'Unit Cost', 'Total Amount', 'Percentage'],
+        ['Initial Chicks', f"{calculation.input_data.initial_chicks:,}", f"${calculation.input_data.chick_cost_per_unit:.2f}/chick", f"${calculation.cost_breakdown.chick_cost:.2f}", f"{calculation.cost_breakdown.chick_cost_percent}%"],
+        ['Pre-starter Feed', f"{calculation.input_data.pre_starter_feed.consumption_kg:.1f} kg", f"${calculation.input_data.pre_starter_feed.cost_per_kg:.2f}/kg", f"${calculation.cost_breakdown.pre_starter_cost:.2f}", f"{calculation.cost_breakdown.pre_starter_cost_percent}%"],
+        ['Starter Feed', f"{calculation.input_data.starter_feed.consumption_kg:.1f} kg", f"${calculation.input_data.starter_feed.cost_per_kg:.2f}/kg", f"${calculation.cost_breakdown.starter_cost:.2f}", f"{calculation.cost_breakdown.starter_cost_percent}%"],
+        ['Growth Feed', f"{calculation.input_data.growth_feed.consumption_kg:.1f} kg", f"${calculation.input_data.growth_feed.cost_per_kg:.2f}/kg", f"${calculation.cost_breakdown.growth_cost:.2f}", f"{calculation.cost_breakdown.growth_cost_percent}%"],
+        ['Final Feed', f"{calculation.input_data.final_feed.consumption_kg:.1f} kg", f"${calculation.input_data.final_feed.cost_per_kg:.2f}/kg", f"${calculation.cost_breakdown.final_cost:.2f}", f"{calculation.cost_breakdown.final_cost_percent}%"],
+        ['Medicine & Vaccines', 'Lump Sum', 'N/A', f"${calculation.cost_breakdown.medicine_cost:.2f}", f"{calculation.cost_breakdown.medicine_cost_percent}%"],
+        ['Miscellaneous Costs', 'Lump Sum', 'N/A', f"${calculation.cost_breakdown.miscellaneous_cost:.2f}", f"{calculation.cost_breakdown.miscellaneous_cost_percent}%"],
+        ['Sawdust Bedding', 'Lump Sum', 'N/A', f"${calculation.cost_breakdown.sawdust_bedding_cost:.2f}", f"{calculation.cost_breakdown.sawdust_bedding_cost_percent}%"],
+        ['Cost Variations', 'Lump Sum', 'N/A', f"${calculation.cost_breakdown.cost_variations:.2f}", f"{calculation.cost_breakdown.cost_variations_percent}%"],
+        ['', '', '', '', ''],
+        ['TOTAL GROSS COST', '', '', f"${calculation.total_cost:.2f}", '100.0%'],
     ]
     
-    fin_table = Table(financial_data, colWidths=[2.5*inch, 1.5*inch, 1*inch])
+    # Add revenue if exists
+    if calculation.total_revenue > 0:
+        financial_data.extend([
+            ['Chicken Bedding Sale', f"{calculation.total_weight_produced_kg:.1f} kg equiv.", 'Revenue', f"-${calculation.total_revenue:.2f}", 'Revenue'],
+            ['NET TOTAL COST', '', '', f"${calculation.total_cost - calculation.total_revenue:.2f}", 'Final'],
+        ])
+    
+    fin_table = Table(financial_data, colWidths=[2.2*inch, 1.3*inch, 1.0*inch, 1.0*inch, 0.8*inch])
     fin_table.setStyle(TableStyle([
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
-        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTSIZE', (0, 0), (-1, -1), 9),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTNAME', (0, -3), (-1, -1), 'Helvetica-Bold'),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-        ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
-        ('ALIGN', (2, 1), (-1, -1), 'CENTER'),
+        ('ALIGN', (2, 1), (-1, -1), 'RIGHT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('GRID', (0, 0), (-1, -4), 1, colors.black),
         ('GRID', (0, -3), (-1, -1), 2, colors.black),
@@ -605,6 +611,25 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
         ('BACKGROUND', (0, -3), (-1, -1), colors.lightcoral),
     ]))
     story.append(fin_table)
+    story.append(Spacer(1, 20))
+    
+    # Handler Performance Section
+    story.append(Paragraph("HANDLER PERFORMANCE SUMMARY", heading_style))
+    
+    handler_summary = f"""
+    Handler: {calculation.input_data.handler_name}
+    
+    This batch performance contributed to the handler's overall metrics:
+    • Feed Conversion Ratio: {calculation.feed_conversion_ratio} (Target: <1.8 excellent, <2.2 good)
+    • Mortality Rate: {calculation.mortality_rate_percent}% (Target: <3% excellent, <7% good)  
+    • Daily Weight Gain: {calculation.daily_weight_gain} kg/day (Target: >0.065 excellent, >0.055 good)
+    • Cost Management: ${calculation.net_cost_per_kg:.2f} per kg net cost
+    
+    Handler's responsibility included feed management, health monitoring, environmental control, 
+    and daily care of {calculation.input_data.initial_chicks:,} chicks over {calculation.weighted_average_age:.0f} days average.
+    """
+    
+    story.append(Paragraph(handler_summary, styles['Normal']))
     story.append(Spacer(1, 20))
     
     # Removal Batches Detail
