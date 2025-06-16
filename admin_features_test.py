@@ -43,6 +43,8 @@ class AdminFeaturesTest(unittest.TestCase):
             "batch_id": self.unique_batch_id,
             "shed_number": self.unique_shed_number,
             "handler_name": self.unique_handler_name,
+            "entry_date": "2024-01-15T00:00:00Z",
+            "exit_date": "2024-03-01T00:00:00Z",
             "initial_chicks": 5000,
             "chick_cost_per_unit": 0.45,
             "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
