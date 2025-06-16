@@ -605,7 +605,12 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
 # API Routes
 @api_router.get("/")
 async def root():
-    return {"message": "Offline Broiler Farm Management System API", "status": "running"}
+    return {
+        "message": "Sistema de Gerenciamento de Granjas de Frango - API",
+        "status": "funcionando",
+        "versao": "1.0.0-pt",
+        "idioma": "português brasileiro"
+    }
 
 @api_router.post("/calculate", response_model=CalculationResult)
 async def calculate_broiler_costs(input_data: BroilerCalculationInput):
