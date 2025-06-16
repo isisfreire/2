@@ -961,10 +961,26 @@ function App() {
                   <span>Cost Variations:</span>
                   <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.cost_variations)} ({result.calculation.cost_breakdown.cost_variations_percent}%)</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>Sawdust Bedding:</span>
+                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.sawdust_bedding_cost)} ({result.calculation.cost_breakdown.sawdust_bedding_cost_percent}%)</span>
+                </div>
                 <div className="flex justify-between border-t pt-2 font-bold text-lg">
                   <span>Total Cost:</span>
                   <span>{formatCurrency(result.calculation.total_cost)}</span>
                 </div>
+                {result.calculation.total_revenue > 0 && (
+                  <>
+                    <div className="flex justify-between text-green-600">
+                      <span>Bedding Revenue:</span>
+                      <span className="font-semibold">-{formatCurrency(result.calculation.total_revenue)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2 font-bold text-xl text-green-600">
+                      <span>Net Cost:</span>
+                      <span>{formatCurrency(result.calculation.total_cost - result.calculation.total_revenue)}</span>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
 
