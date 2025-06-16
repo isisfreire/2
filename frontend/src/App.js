@@ -297,14 +297,17 @@ function App() {
   };
 
   const deleteHandler = async (handlerId) => {
+    console.log('Attempting to delete handler with ID:', handlerId);
     if (!window.confirm('Are you sure you want to delete this handler?')) return;
     
     try {
+      console.log('Making delete request to:', `${API}/handlers/${handlerId}`);
       await axios.delete(`${API}/handlers/${handlerId}`);
       alert('Handler deleted successfully');
       loadAllHandlers();
       loadHandlers();
     } catch (err) {
+      console.error('Delete error:', err);
       const errorMsg = err.response?.data?.detail || 'Error deleting handler';
       alert(errorMsg);
     }
