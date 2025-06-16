@@ -898,6 +898,7 @@ async def get_handler_names():
     """
     handlers = await db.handlers.find().sort("name", 1).to_list(100)
     return [handler["name"] for handler in handlers]
+@api_router.get("/handlers/performance")
 async def get_handlers_performance():
     """
     Get performance analysis for all handlers
