@@ -60,6 +60,8 @@ function App() {
     loadHandlers();
     loadSheds();
     loadHandlerPerformance();
+    loadAllHandlers();
+    loadAllSheds();
   }, []);
 
   const loadHistory = async () => {
