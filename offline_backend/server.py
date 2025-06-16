@@ -23,6 +23,9 @@ from reportlab.lib.enums import TA_CENTER
 # Import our SQLite database
 from database import db
 
+# Import translations
+from translations_pt import BACKEND_TRANSLATIONS as t
+
 # Create FastAPI app
 app = FastAPI(title="Offline Broiler Farm Management System")
 api_router = APIRouter(prefix="/api")
