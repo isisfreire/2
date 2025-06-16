@@ -432,6 +432,254 @@ function App() {
     );
   };
 
+  // Admin Management Component
+  const AdminManagement = () => {
+    const [newHandler, setNewHandler] = useState({ name: '', email: '', phone: '', notes: '' });
+    const [newShed, setNewShed] = useState({ number: '', capacity: '', location: '', status: 'active', notes: '' });
+    const [editingHandler, setEditingHandler] = useState(null);
+    const [editingShed, setEditingShed] = useState(null);
+
+    const handleCreateHandler = async (e) => {
+      e.preventDefault();
+      if (!newHandler.name.trim()) return;
+      
+      await createHandler({
+        name: newHandler.name.trim(),
+        email: newHandler.email.trim() || null,
+        phone: newHandler.phone.trim() || null,
+        notes: newHandler.notes.trim() || null
+      });
+      
+      setNewHandler({ name: '', email: '', phone: '', notes: '' });
+    };
+
+    const handleCreateShed = async (e) => {
+      e.preventDefault();
+      if (!newShed.number.trim()) return;
+      
+      await createShed({
+        number: newShed.number.trim(),
+        capacity: newShed.capacity ? parseInt(newShed.capacity) : null,
+        location: newShed.location.trim() || null,
+        status: newShed.status,
+        notes: newShed.notes.trim() || null
+      });
+      
+      setNewShed({ number: '', capacity: '', location: '', status: 'active', notes: '' });
+    };
+
+    const handleUpdateHandler = async (handlerId, updatedData) => {
+      await updateHandler(handlerId, updatedData);
+      setEditingHandler(null);
+    };
+
+    const handleUpdateShed = async (shedId, updatedData) => {
+      await updateShed(shedId, updatedData);
+      setEditingShed(null);
+    };
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Farm Administration</h2>
+        
+        {/* Handler Management */}
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">👨‍🌾 Handler Management</h3>
+          
+          {/* Add New Handler Form */}
+          <form onSubmit={handleCreateHandler} className="bg-gray-50 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-3">Add New Handler</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Handler Name *"
+                value={newHandler.name}
+                onChange={(e) => setNewHandler({...newHandler, name: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="email"
+                placeholder="Email (optional)"
+                value={newHandler.email}
+                onChange={(e) => setNewHandler({...newHandler, email: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                type="tel"
+                placeholder="Phone (optional)"
+                value={newHandler.phone}
+                onChange={(e) => setNewHandler({...newHandler, phone: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                type="text"
+                placeholder="Notes (optional)"
+                value={newHandler.notes}
+                onChange={(e) => setNewHandler({...newHandler, notes: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+            <button
+              type="submit"
+              className="mt-3 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+            >
+              Add Handler
+            </button>
+          </form>
+
+          {/* Handlers List */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {allHandlers.map((handler) => (
+                  <tr key={handler.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-900">{handler.name}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{handler.email || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{handler.phone || '-'}</td>
+                    <td className="px-4 py-2 text-sm">
+                      <button
+                        onClick={() => setEditingHandler(handler)}
+                        className="text-blue-600 hover:text-blue-800 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete handler "${handler.name}"?`)) {
+                            deleteHandler(handler.id);
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Shed Management */}
+        <div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">🏠 Shed Management</h3>
+          
+          {/* Add New Shed Form */}
+          <form onSubmit={handleCreateShed} className="bg-gray-50 p-4 rounded-lg mb-4">
+            <h4 className="font-semibold mb-3">Add New Shed</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <input
+                type="text"
+                placeholder="Shed Number *"
+                value={newShed.number}
+                onChange={(e) => setNewShed({...newShed, number: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                required
+              />
+              <input
+                type="number"
+                placeholder="Capacity (optional)"
+                value={newShed.capacity}
+                onChange={(e) => setNewShed({...newShed, capacity: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <input
+                type="text"
+                placeholder="Location (optional)"
+                value={newShed.location}
+                onChange={(e) => setNewShed({...newShed, location: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+              <select
+                value={newShed.status}
+                onChange={(e) => setNewShed({...newShed, status: e.target.value})}
+                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="active">Active</option>
+                <option value="maintenance">Maintenance</option>
+                <option value="inactive">Inactive</option>
+              </select>
+            </div>
+            <input
+              type="text"
+              placeholder="Notes (optional)"
+              value={newShed.notes}
+              onChange={(e) => setNewShed({...newShed, notes: e.target.value})}
+              className="w-full mt-4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <button
+              type="submit"
+              className="mt-3 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
+            >
+              Add Shed
+            </button>
+          </form>
+
+          {/* Sheds List */}
+          <div className="overflow-x-auto">
+            <table className="min-w-full table-auto">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Number</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {allSheds.map((shed) => (
+                  <tr key={shed.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-2 text-sm font-semibold text-gray-900">{shed.number}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{shed.capacity || '-'}</td>
+                    <td className="px-4 py-2 text-sm text-gray-600">{shed.location || '-'}</td>
+                    <td className="px-4 py-2 text-sm">
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        shed.status === 'active' ? 'bg-green-100 text-green-800' :
+                        shed.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {shed.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-2 text-sm">
+                      <button
+                        onClick={() => setEditingShed(shed)}
+                        className="text-blue-600 hover:text-blue-800 mr-3"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (window.confirm(`Delete shed "${shed.number}"?`)) {
+                            deleteShed(shed.id);
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
