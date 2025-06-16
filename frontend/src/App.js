@@ -271,6 +271,8 @@ function App() {
     setRemovalBatches([{ quantity: '', total_weight_kg: '', age_days: '' }]);
     setResult(null);
     setError('');
+    setEditingBatch(false);
+    setSelectedBatch(null);
   };
 
   // Admin functions
