@@ -291,6 +291,57 @@ function App() {
     );
   };
 
+  // Handler Performance Component
+  const HandlerPerformanceTable = () => {
+    if (handlerPerformance.length === 0) return null;
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Handler Performance Ranking</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batches</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg FCR</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Mortality %</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Daily Gain</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {handlerPerformance.map((handler, index) => (
+                <tr key={index} className={`hover:bg-gray-50 ${index === 0 ? 'bg-green-50' : ''}`}>
+                  <td className="px-4 py-2 text-sm font-semibold">
+                    {index === 0 ? '🏆' : ''} #{index + 1}
+                  </td>
+                  <td className="px-4 py-2 text-sm font-semibold text-gray-900">{handler.handler_name}</td>
+                  <td className="px-4 py-2 text-sm text-gray-600">{handler.total_batches}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{handler.avg_feed_conversion_ratio}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{handler.avg_mortality_rate}%</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{handler.avg_daily_weight_gain} kg</td>
+                  <td className="px-4 py-2">
+                    <div className="flex items-center">
+                      <div className="w-16 bg-gray-200 rounded-full h-2 mr-2">
+                        <div 
+                          className="bg-green-600 h-2 rounded-full" 
+                          style={{ width: `${handler.performance_score}%` }}
+                        ></div>
+                      </div>
+                      <span className="text-sm font-semibold">{handler.performance_score}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
