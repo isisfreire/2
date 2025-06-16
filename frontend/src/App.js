@@ -460,57 +460,7 @@ function App() {
 
   // Handler Performance Component
   const HandlerPerformanceTable = () => {
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-
-    useEffect(() => {
-      const loadPerformanceData = async () => {
-        setLoading(true);
-        setError('');
-        try {
-          await loadHandlerPerformance();
-        } catch (err) {
-          setError('Failed to load performance data');
-          console.error('Error loading performance data:', err);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      if (showPerformanceTab) {
-        loadPerformanceData();
-      }
-    }, [showPerformanceTab]);
-
     if (!showPerformanceTab) return null;
-
-    if (loading) {
-      return (
-        <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Handler Performance Ranking</h2>
-          <div className="flex justify-center items-center py-8">
-            <div className="text-gray-500">Loading performance data...</div>
-          </div>
-        </div>
-      );
-    }
-
-    if (error) {
-      return (
-        <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Handler Performance Ranking</h2>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-600">{error}</p>
-            <button 
-              onClick={() => loadHandlerPerformance()}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
-            >
-              Retry
-            </button>
-          </div>
-        </div>
-      );
-    }
 
     if (handlerPerformance.length === 0) {
       return (
