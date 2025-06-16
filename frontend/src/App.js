@@ -45,7 +45,11 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [history, setHistory] = useState([]);
+  const [handlers, setHandlers] = useState([]);
+  const [handlerPerformance, setHandlerPerformance] = useState([]);
+  const [sheds, setSheds] = useState([]);
   const [activeTab, setActiveTab] = useState('basic');
+  const [showPerformanceTab, setShowPerformanceTab] = useState(false);
 
   // Load calculation history on component mount
   useEffect(() => {
