@@ -839,6 +839,8 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
             "batch_id": test_batch_id,
             "shed_number": "SHED-D1",
             "handler_name": "Details Tester",
+            "entry_date": "2024-01-15T00:00:00Z",
+            "exit_date": "2024-03-01T00:00:00Z",
             "initial_chicks": 5000,
             "chick_cost_per_unit": 0.45,
             "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
