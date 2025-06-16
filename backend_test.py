@@ -861,14 +861,31 @@ if __name__ == "__main__":
         print("Admin Features Test module not found, skipping those tests")
         run_admin_tests = False
     
+    # Import the enhanced date handling test
+    try:
+        from enhanced_date_test import EnhancedDateHandlingTest
+        print("Enhanced Date Handling Test module loaded successfully")
+        run_date_tests = True
+    except ImportError:
+        print("Enhanced Date Handling Test module not found, skipping those tests")
+        run_date_tests = False
+    
     # Create test suites
     suite1 = unittest.TestLoader().loadTestsFromTestCase(EnhancedBroilerCalculatorAPITest)
     
+    # Create a list of suites
+    suites = [suite1]
+    
     if run_admin_tests:
         suite2 = unittest.TestLoader().loadTestsFromTestCase(AdminFeaturesTest)
-        suite = unittest.TestSuite([suite1, suite2])
-    else:
-        suite = suite1
+        suites.append(suite2)
+    
+    if run_date_tests:
+        suite3 = unittest.TestLoader().loadTestsFromTestCase(EnhancedDateHandlingTest)
+        suites.append(suite3)
+    
+    # Combine all suites
+    suite = unittest.TestSuite(suites)
     
     # Run the tests
     result = unittest.TextTestRunner().run(suite)
