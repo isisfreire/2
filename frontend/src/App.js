@@ -255,6 +255,8 @@ function App() {
       batch_id: '',
       shed_number: '',
       handler_name: '',
+      entry_date: '',
+      exit_date: '',
       initial_chicks: '',
       chick_cost_per_unit: '',
       pre_starter_consumption: '',
