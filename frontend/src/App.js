@@ -222,6 +222,8 @@ function App() {
       loadHandlers();
       loadSheds();
       loadHandlerPerformance();
+      loadAllHandlers();
+      loadAllSheds();
       
     } catch (err) {
       setError(err.response?.data?.detail || 'An error occurred during calculation');
