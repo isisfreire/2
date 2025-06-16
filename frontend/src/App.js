@@ -453,6 +453,27 @@ function App() {
     }
   };
 
+  // Test function to check API connectivity
+  const testAPI = async () => {
+    try {
+      console.log('Testing API connectivity...');
+      console.log('API URL:', API);
+      
+      // Test GET request
+      const getResponse = await axios.get(`${API}/`);
+      console.log('GET request successful:', getResponse.data);
+      
+      // Test if we can reach the handlers endpoint
+      const handlersResponse = await axios.get(`${API}/handlers`);
+      console.log('Handlers GET successful, count:', handlersResponse.data.length);
+      
+      alert('API connectivity test successful! Check console for details.');
+    } catch (err) {
+      console.error('API connectivity test failed:', err);
+      alert(`API test failed: ${err.message}`);
+    }
+  };
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
