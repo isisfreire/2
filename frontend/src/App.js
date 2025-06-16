@@ -425,6 +425,33 @@ function App() {
     }
   };
 
+  const deleteBatch = async (batchId) => {
+    if (!window.confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
+    
+    try {
+      await axios.delete(`${API}/calculations/${batchId}`);
+      alert('Batch deleted successfully');
+      loadHistory();
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'Error deleting batch';
+      alert(errorMsg);
+    }
+  };
+
+  const regeneratePDF = async (batchId) => {
+    try {
+      const response = await axios.get(`${API}/batches/${batchId}/export-pdf`);
+      const filename = response.data.filename;
+      alert(`PDF regenerated successfully: ${filename}`);
+      
+      // Download the PDF immediately
+      downloadPDF(filename);
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'Error regenerating PDF';
+      alert(errorMsg);
+    }
+  };
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
