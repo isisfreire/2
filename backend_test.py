@@ -585,8 +585,10 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
     def test_duplicate_batch_id_prevention(self):
         """Test that duplicate batch IDs are prevented"""
         # Create a batch with a specific ID
+        duplicate_batch_id = f"BATCH-DUPLICATE-{uuid.uuid4().hex[:8]}"
+        
         payload = {
-            "batch_id": "BATCH-DUPLICATE-TEST",
+            "batch_id": duplicate_batch_id,
             "shed_number": "SHED-B2",
             "handler_name": "Jane Doe",
             "initial_chicks": 5000,
