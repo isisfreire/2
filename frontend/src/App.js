@@ -282,42 +282,30 @@ function App() {
   };
 
   const deleteHandler = async (handlerId) => {
+    if (!window.confirm('Are you sure you want to delete this handler?')) return;
+    
     try {
       await axios.delete(`${API}/handlers/${handlerId}`);
+      alert('Handler deleted successfully');
       loadAllHandlers();
       loadHandlers();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error deleting handler');
-    }
-  };
-
-  const createShed = async (shedData) => {
-    try {
-      await axios.post(`${API}/admin/sheds`, shedData);
-      loadAllSheds();
-      loadSheds();
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Error creating shed');
-    }
-  };
-
-  const updateShed = async (shedId, shedData) => {
-    try {
-      await axios.put(`${API}/admin/sheds/${shedId}`, shedData);
-      loadAllSheds();
-      loadSheds();
-    } catch (err) {
-      alert(err.response?.data?.detail || 'Error updating shed');
+      const errorMsg = err.response?.data?.detail || 'Error deleting handler';
+      alert(errorMsg);
     }
   };
 
   const deleteShed = async (shedId) => {
+    if (!window.confirm('Are you sure you want to delete this shed?')) return;
+    
     try {
       await axios.delete(`${API}/admin/sheds/${shedId}`);
+      alert('Shed deleted successfully');
       loadAllSheds();
       loadSheds();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error deleting shed');
+      const errorMsg = err.response?.data?.detail || 'Error deleting shed';
+      alert(errorMsg);
     }
   };
 
