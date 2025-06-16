@@ -298,18 +298,23 @@ function App() {
 
   const deleteHandler = async (handlerId) => {
     console.log('Attempting to delete handler with ID:', handlerId);
+    console.log('API URL being used:', API);
+    console.log('Full delete URL:', `${API}/handlers/${handlerId}`);
+    
     if (!window.confirm('Are you sure you want to delete this handler?')) return;
     
     try {
-      console.log('Making delete request to:', `${API}/handlers/${handlerId}`);
-      await axios.delete(`${API}/handlers/${handlerId}`);
+      console.log('Making delete request...');
+      const response = await axios.delete(`${API}/handlers/${handlerId}`);
+      console.log('Delete response:', response);
       alert('Handler deleted successfully');
-      loadAllHandlers();
-      loadHandlers();
+      await loadAllHandlers();
+      await loadHandlers();
     } catch (err) {
-      console.error('Delete error:', err);
-      const errorMsg = err.response?.data?.detail || 'Error deleting handler';
-      alert(errorMsg);
+      console.error('Delete error details:', err);
+      console.error('Error response:', err.response);
+      const errorMsg = err.response?.data?.detail || err.message || 'Error deleting handler';
+      alert(`Delete failed: ${errorMsg}`);
     }
   };
 
