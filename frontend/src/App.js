@@ -432,17 +432,22 @@ function App() {
 
   const deleteBatch = async (batchId) => {
     console.log('Attempting to delete batch with ID:', batchId);
+    console.log('API URL being used:', API);
+    console.log('Full delete URL:', `${API}/batches/${batchId}`);
+    
     if (!window.confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
     
     try {
-      console.log('Making delete request to:', `${API}/batches/${batchId}`);
-      await axios.delete(`${API}/batches/${batchId}`);
+      console.log('Making delete request...');
+      const response = await axios.delete(`${API}/batches/${batchId}`);
+      console.log('Delete response:', response);
       alert('Batch deleted successfully');
-      loadHistory();
+      await loadHistory();
     } catch (err) {
-      console.error('Delete error:', err);
-      const errorMsg = err.response?.data?.detail || 'Error deleting batch';
-      alert(errorMsg);
+      console.error('Delete error details:', err);
+      console.error('Error response:', err.response);
+      const errorMsg = err.response?.data?.detail || err.message || 'Error deleting batch';
+      alert(`Delete failed: ${errorMsg}`);
     }
   };
 
