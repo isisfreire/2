@@ -1073,6 +1073,23 @@ async def get_batch_details(batch_id: str):
     
     return BroilerCalculation(**calculation)
 
+@api_router.get("/batches/{batch_id}/export-pdf")
+async def regenerate_batch_pdf(batch_id: str):
+    """
+    Regenerate PDF report for an existing batch
+    """
+    calculation = await db.broiler_calculations.find_one({"input_data.batch_id": batch_id})
+    if not calculation:
+        raise HTTPException(status_code=404, detail="Batch not found")
+    
+    # Convert back to calculation object
+    calc_obj = BroilerCalculation(**calculation)
+    
+    # Generate new PDF
+    pdf_filename = generate_pdf_report(calc_obj)
+    
+    return {"message": "PDF regenerated successfully", "filename": pdf_filename}
+
 @api_router.get("/export/{filename}")
 async def download_export(filename: str):
     """
