@@ -54,6 +54,9 @@ function App() {
   // Load calculation history on component mount
   useEffect(() => {
     loadHistory();
+    loadHandlers();
+    loadSheds();
+    loadHandlerPerformance();
   }, []);
 
   const loadHistory = async () => {
@@ -62,6 +65,33 @@ function App() {
       setHistory(response.data);
     } catch (err) {
       console.error('Error loading history:', err);
+    }
+  };
+
+  const loadHandlers = async () => {
+    try {
+      const response = await axios.get(`${API}/handlers`);
+      setHandlers(response.data);
+    } catch (err) {
+      console.error('Error loading handlers:', err);
+    }
+  };
+
+  const loadSheds = async () => {
+    try {
+      const response = await axios.get(`${API}/sheds`);
+      setSheds(response.data);
+    } catch (err) {
+      console.error('Error loading sheds:', err);
+    }
+  };
+
+  const loadHandlerPerformance = async () => {
+    try {
+      const response = await axios.get(`${API}/handlers/performance`);
+      setHandlerPerformance(response.data);
+    } catch (err) {
+      console.error('Error loading handler performance:', err);
     }
   };
 
