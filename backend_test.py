@@ -852,8 +852,23 @@ if __name__ == "__main__":
     print("Starting Enhanced Broiler Farm Management System API Tests...")
     print(f"API URL: {API_URL}")
     
-    # Create a test suite with all tests
-    suite = unittest.TestLoader().loadTestsFromTestCase(EnhancedBroilerCalculatorAPITest)
+    # Import the admin features test
+    try:
+        from admin_features_test import AdminFeaturesTest
+        print("Admin Features Test module loaded successfully")
+        run_admin_tests = True
+    except ImportError:
+        print("Admin Features Test module not found, skipping those tests")
+        run_admin_tests = False
+    
+    # Create test suites
+    suite1 = unittest.TestLoader().loadTestsFromTestCase(EnhancedBroilerCalculatorAPITest)
+    
+    if run_admin_tests:
+        suite2 = unittest.TestLoader().loadTestsFromTestCase(AdminFeaturesTest)
+        suite = unittest.TestSuite([suite1, suite2])
+    else:
+        suite = suite1
     
     # Run the tests
     result = unittest.TextTestRunner().run(suite)
