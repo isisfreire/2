@@ -33,12 +33,374 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         # Generate unique handler name for performance tests
         self.unique_handler_name = f"Handler-{uuid.uuid4().hex[:8]}"
 
-    def test_api_health(self):
-        """Test API health check endpoint"""
-        response = requests.get(f"{API_URL}/")
+    def test_comprehensive_farm_management_system(self):
+        """
+        Test the comprehensive farm management system with the specified scenario:
+        - Batch: "BATCH-2024-001", Shed: "SHED-A1", Handler: "John Smith"
+        - 10,000 chicks, $0.45/chick, 4 feed phases, sawdust bedding: $400, bedding sale: $600
+        - Medicine: $800, misc: $500, variations: $300, 250 died
+        - Multiple removal batches with different ages
+        """
+        # Create a unique batch ID for this test
+        test_batch_id = f"BATCH-2024-{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            # Batch identification
+            "batch_id": test_batch_id,
+            "shed_number": "SHED-A1",
+            "handler_name": self.unique_handler_name,
+            
+            # Basic data
+            "initial_chicks": 10000,
+            "chick_cost_per_unit": 0.45,
+            
+            # 4 feed phases
+            "pre_starter_feed": {
+                "consumption_kg": 500,
+                "cost_per_kg": 0.65
+            },
+            "starter_feed": {
+                "consumption_kg": 2500,
+                "cost_per_kg": 0.45
+            },
+            "growth_feed": {
+                "consumption_kg": 8000,
+                "cost_per_kg": 0.40
+            },
+            "final_feed": {
+                "consumption_kg": 12000,
+                "cost_per_kg": 0.35
+            },
+            
+            # Enhanced costs
+            "medicine_costs": 800,
+            "miscellaneous_costs": 500,
+            "cost_variations": 300,
+            "sawdust_bedding_cost": 400,
+            "chicken_bedding_sale_revenue": 600,
+            
+            # Mortality
+            "chicks_died": 250,
+            
+            # Removal batches with different ages
+            "removal_batches": [
+                {"quantity": 2000, "total_weight_kg": 4600, "age_days": 35},
+                {"quantity": 3000, "total_weight_kg": 7500, "age_days": 42},
+                {"quantity": 4000, "total_weight_kg": 11200, "age_days": 50},
+                {"quantity": 500, "total_weight_kg": 1500, "age_days": 45}
+            ]
+        }
+        
+        # Submit the calculation
+        response = requests.post(f"{API_URL}/calculate", json=payload)
         self.assertEqual(response.status_code, 200)
+        
         data = response.json()
-        self.assertEqual(data["message"], "Enhanced Broiler Farm Management System API")
+        calculation = data["calculation"]
+        
+        # Verify batch identification
+        self.assertEqual(calculation["input_data"]["batch_id"], test_batch_id)
+        self.assertEqual(calculation["input_data"]["shed_number"], "SHED-A1")
+        self.assertEqual(calculation["input_data"]["handler_name"], self.unique_handler_name)
+        
+        # Verify handler was created
+        response = requests.get(f"{API_URL}/handlers")
+        self.assertEqual(response.status_code, 200)
+        handlers = response.json()
+        self.assertIn(self.unique_handler_name, handlers)
+        
+        # Verify shed was recorded
+        response = requests.get(f"{API_URL}/sheds")
+        self.assertEqual(response.status_code, 200)
+        sheds = response.json()
+        self.assertIn("SHED-A1", sheds)
+        
+        # Verify batch details endpoint
+        response = requests.get(f"{API_URL}/batches/{test_batch_id}")
+        self.assertEqual(response.status_code, 200)
+        batch = response.json()
+        self.assertEqual(batch["input_data"]["batch_id"], test_batch_id)
+        
+        # Verify export file was created
+        export_insight = next((i for i in data["insights"] if "batch report exported" in i.lower()), None)
+        self.assertIsNotNone(export_insight)
+        export_filename = export_insight.split("as: ")[1].strip()
+        
+        # Download and verify export file
+        response = requests.get(f"{API_URL}/export/{export_filename}")
+        self.assertEqual(response.status_code, 200)
+        export_data = response.json()
+        
+        # Verify export data structure
+        self.assertEqual(export_data["batch_info"]["batch_id"], test_batch_id)
+        self.assertEqual(export_data["batch_info"]["shed_number"], "SHED-A1")
+        self.assertEqual(export_data["batch_info"]["handler_name"], self.unique_handler_name)
+        
+        # Verify financial data in export
+        self.assertAlmostEqual(export_data["financial_summary"]["total_cost"], 15350.0, delta=0.01)
+        self.assertAlmostEqual(export_data["financial_summary"]["total_revenue"], 600.0, delta=0.01)
+        self.assertAlmostEqual(export_data["financial_summary"]["net_cost_per_kg"], 0.59, delta=0.01)
+        
+        # Verify removal batches in export
+        self.assertEqual(len(export_data["removal_batches"]), 4)
+        
+        return test_batch_id  # Return for use in other tests
+
+    def test_handler_performance_analytics_and_ranking(self):
+        """
+        Test handler performance analytics and ranking system
+        - Create multiple batches for the same handler
+        - Verify performance metrics calculation
+        - Check ranking system
+        """
+        # Create a unique handler name for this test
+        handler_name = f"Performance-Handler-{uuid.uuid4().hex[:8]}"
+        
+        # Create first batch with good performance
+        batch1_payload = {
+            "batch_id": f"BATCH-PERF1-{uuid.uuid4().hex[:8]}",
+            "shed_number": "SHED-P1",
+            "handler_name": handler_name,
+            "initial_chicks": 10000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 500, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 2500, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 7500, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 11000, "cost_per_kg": 0.35},
+            "medicine_costs": 800,
+            "miscellaneous_costs": 500,
+            "cost_variations": 300,
+            "sawdust_bedding_cost": 400,
+            "chicken_bedding_sale_revenue": 600,
+            "chicks_died": 200,  # 2% mortality
+            "removal_batches": [
+                {"quantity": 9800, "total_weight_kg": 25000, "age_days": 42}
+            ]
+        }
+        
+        # Second batch with average performance
+        batch2_payload = {
+            "batch_id": f"BATCH-PERF2-{uuid.uuid4().hex[:8]}",
+            "shed_number": "SHED-P2",
+            "handler_name": handler_name,
+            "initial_chicks": 8000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 400, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 2000, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 6400, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 9600, "cost_per_kg": 0.35},
+            "medicine_costs": 640,
+            "miscellaneous_costs": 400,
+            "cost_variations": 240,
+            "sawdust_bedding_cost": 320,
+            "chicken_bedding_sale_revenue": 480,
+            "chicks_died": 400,  # 5% mortality
+            "removal_batches": [
+                {"quantity": 7600, "total_weight_kg": 18000, "age_days": 45}
+            ]
+        }
+        
+        # Third batch with different performance
+        batch3_payload = {
+            "batch_id": f"BATCH-PERF3-{uuid.uuid4().hex[:8]}",
+            "shed_number": "SHED-P3",
+            "handler_name": handler_name,
+            "initial_chicks": 12000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 600, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 3000, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 9600, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 14400, "cost_per_kg": 0.35},
+            "medicine_costs": 960,
+            "miscellaneous_costs": 600,
+            "cost_variations": 360,
+            "sawdust_bedding_cost": 480,
+            "chicken_bedding_sale_revenue": 720,
+            "chicks_died": 600,  # 5% mortality
+            "removal_batches": [
+                {"quantity": 11400, "total_weight_kg": 30000, "age_days": 48}
+            ]
+        }
+        
+        # Submit all batches
+        response1 = requests.post(f"{API_URL}/calculate", json=batch1_payload)
+        self.assertEqual(response1.status_code, 200)
+        
+        response2 = requests.post(f"{API_URL}/calculate", json=batch2_payload)
+        self.assertEqual(response2.status_code, 200)
+        
+        response3 = requests.post(f"{API_URL}/calculate", json=batch3_payload)
+        self.assertEqual(response3.status_code, 200)
+        
+        # Get individual handler performance
+        response = requests.get(f"{API_URL}/handlers/{handler_name}/performance")
+        self.assertEqual(response.status_code, 200)
+        
+        performance = response.json()
+        
+        # Verify handler performance data
+        self.assertEqual(performance["handler_name"], handler_name)
+        self.assertEqual(performance["total_batches"], 3)
+        self.assertEqual(performance["total_chicks_processed"], 30000)  # 10000 + 8000 + 12000
+        
+        # Verify performance metrics
+        # Batch 1: FCR = 0.86, Mortality = 2%, Daily gain = 0.060
+        # Batch 2: FCR = 1.02, Mortality = 5%, Daily gain = 0.053
+        # Batch 3: FCR = 0.92, Mortality = 5%, Daily gain = 0.055
+        # Averages: FCR = 0.93, Mortality = 4%, Daily gain = 0.056
+        self.assertAlmostEqual(performance["avg_feed_conversion_ratio"], 0.93, delta=0.1)
+        self.assertAlmostEqual(performance["avg_mortality_rate"], 4.0, delta=0.5)
+        self.assertAlmostEqual(performance["avg_daily_weight_gain"], 0.056, delta=0.01)
+        
+        # Verify performance score calculation
+        # FCR score: (2.8 - 0.93) / (2.8 - 1.6) * 100 = 155.8 (capped at 100)
+        # Mortality score: (12 - 4) / (12 - 3) * 100 = 88.9
+        # Daily gain score: (0.056 - 0.045) / (0.065 - 0.045) * 100 = 55
+        # Performance score = 100 * 0.35 + 88.9 * 0.35 + 55 * 0.30 = 82.6
+        self.assertGreaterEqual(performance["performance_score"], 80)
+        
+        # Test handlers ranking endpoint
+        response = requests.get(f"{API_URL}/handlers/performance")
+        self.assertEqual(response.status_code, 200)
+        
+        performances = response.json()
+        self.assertGreater(len(performances), 0)
+        
+        # Verify our handler is in the list
+        handler_in_list = any(p["handler_name"] == handler_name for p in performances)
+        self.assertTrue(handler_in_list)
+        
+        # Verify ranking order (should be sorted by performance score)
+        if len(performances) > 1:
+            for i in range(len(performances) - 1):
+                self.assertGreaterEqual(
+                    performances[i]["performance_score"],
+                    performances[i+1]["performance_score"]
+                )
+
+    def test_batch_export_system(self):
+        """
+        Test the batch export system
+        - Create a batch
+        - Verify export file generation
+        - Check export file content
+        """
+        # Create a unique batch for this test
+        test_batch_id = f"BATCH-EXPORT-{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            "batch_id": test_batch_id,
+            "shed_number": "SHED-E1",
+            "handler_name": f"Export-Handler-{uuid.uuid4().hex[:8]}",
+            "initial_chicks": 5000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 1250, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 4000, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 6000, "cost_per_kg": 0.35},
+            "medicine_costs": 400,
+            "miscellaneous_costs": 250,
+            "cost_variations": 150,
+            "sawdust_bedding_cost": 200,
+            "chicken_bedding_sale_revenue": 300,
+            "chicks_died": 125,
+            "removal_batches": [
+                {"quantity": 2000, "total_weight_kg": 4800, "age_days": 40},
+                {"quantity": 2875, "total_weight_kg": 7500, "age_days": 45}
+            ]
+        }
+        
+        # Submit the calculation
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
+        
+        data = response.json()
+        
+        # Extract export filename from insights
+        export_insight = next((i for i in data["insights"] if "batch report exported" in i.lower()), None)
+        self.assertIsNotNone(export_insight)
+        export_filename = export_insight.split("as: ")[1].strip()
+        
+        # Download export file
+        response = requests.get(f"{API_URL}/export/{export_filename}")
+        self.assertEqual(response.status_code, 200)
+        
+        # Verify content type is JSON
+        self.assertEqual(response.headers['Content-Type'], 'application/json')
+        
+        # Verify file content
+        export_data = response.json()
+        
+        # Check structure
+        self.assertIn("batch_info", export_data)
+        self.assertIn("performance_metrics", export_data)
+        self.assertIn("production_data", export_data)
+        self.assertIn("financial_summary", export_data)
+        self.assertIn("removal_batches", export_data)
+        
+        # Verify batch info
+        self.assertEqual(export_data["batch_info"]["batch_id"], test_batch_id)
+        self.assertEqual(export_data["batch_info"]["shed_number"], "SHED-E1")
+        
+        # Verify performance metrics
+        self.assertIn("feed_conversion_ratio", export_data["performance_metrics"])
+        self.assertIn("mortality_rate_percent", export_data["performance_metrics"])
+        self.assertIn("weighted_average_age", export_data["performance_metrics"])
+        self.assertIn("daily_weight_gain", export_data["performance_metrics"])
+        
+        # Verify production data
+        self.assertEqual(export_data["production_data"]["initial_chicks"], 5000)
+        self.assertEqual(export_data["production_data"]["surviving_chicks"], 4875)
+        self.assertEqual(export_data["production_data"]["removed_chicks"], 4875)
+        self.assertEqual(export_data["production_data"]["missing_chicks"], 0)
+        
+        # Verify financial summary
+        self.assertIn("total_cost", export_data["financial_summary"])
+        self.assertIn("total_revenue", export_data["financial_summary"])
+        self.assertIn("net_cost_per_kg", export_data["financial_summary"])
+        self.assertIn("cost_breakdown", export_data["financial_summary"])
+        
+        # Verify removal batches
+        self.assertEqual(len(export_data["removal_batches"]), 2)
+        
+        # Test non-existent export file
+        response = requests.get(f"{API_URL}/export/non-existent-file.json")
+        self.assertEqual(response.status_code, 404)
+
+    def test_invalid_age_validation(self):
+        """Test validation for invalid age ranges"""
+        # Create a batch with age outside the valid range (35-60 days)
+        payload = {
+            "batch_id": f"BATCH-INVALID-AGE-{uuid.uuid4().hex[:8]}",
+            "shed_number": "SHED-TEST",
+            "handler_name": "Test Handler",
+            "initial_chicks": 5000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 1250, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 4000, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 6000, "cost_per_kg": 0.35},
+            "medicine_costs": 400,
+            "miscellaneous_costs": 250,
+            "cost_variations": 150,
+            "sawdust_bedding_cost": 200,
+            "chicken_bedding_sale_revenue": 300,
+            "chicks_died": 125,
+            "removal_batches": [
+                {"quantity": 4875, "total_weight_kg": 12300, "age_days": 65}  # Invalid age
+            ]
+        }
+        
+        # Submit the calculation - should fail
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Age must be between 35-60 days", response.text)
+        
+        # Try with age too low
+        payload["removal_batches"][0]["age_days"] = 30
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 400)
+        self.assertIn("Age must be between 35-60 days", response.text)
 
     def test_complete_farm_scenario(self):
         """
