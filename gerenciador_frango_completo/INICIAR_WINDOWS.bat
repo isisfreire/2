@@ -121,7 +121,7 @@ echo ================================================================
 echo.
 
 REM Iniciar a aplicacao principal
-python app_launcher.py
+python app_launcher_simple.py
 goto :fim
 
 :erro
