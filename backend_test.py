@@ -431,6 +431,10 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
             "shed_number": "SHED-A1",
             "handler_name": "John Smith",
             
+            # Batch dates
+            "entry_date": "2024-01-15T00:00:00Z",
+            "exit_date": "2024-03-01T00:00:00Z",
+            
             # Basic data
             "initial_chicks": 10000,
             "chick_cost_per_unit": 0.45,
