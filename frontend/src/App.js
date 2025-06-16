@@ -818,6 +818,139 @@ function App() {
     );
   };
 
+  // Batch Management Component
+  const BatchManagement = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterHandler, setFilterHandler] = useState('');
+    const [filterShed, setFilterShed] = useState('');
+
+    const filteredHistory = history.filter(batch => {
+      const matchesSearch = batch.batch_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           batch.handler_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           batch.shed_number.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesHandler = !filterHandler || batch.handler_name === filterHandler;
+      const matchesShed = !filterShed || batch.shed_number === filterShed;
+      
+      return matchesSearch && matchesHandler && matchesShed;
+    });
+
+    return (
+      <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">📋 Batch Management</h2>
+        
+        {/* Search and Filter Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Search Batches</label>
+            <input
+              type="text"
+              placeholder="Search by batch ID, handler, or shed..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Handler</label>
+            <select
+              value={filterHandler}
+              onChange={(e) => setFilterHandler(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="">All Handlers</option>
+              {handlers.map(handler => (
+                <option key={handler} value={handler}>{handler}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Shed</label>
+            <select
+              value={filterShed}
+              onChange={(e) => setFilterShed(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            >
+              <option value="">All Sheds</option>
+              {sheds.map(shed => (
+                <option key={shed} value={shed}>{shed}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {/* Batch List */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batch ID</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shed</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Chicks</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FCR</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mortality %</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cost/kg</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {filteredHistory.map((batch, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 text-sm font-mono font-semibold text-gray-900">{batch.batch_id}</td>
+                  <td className="px-4 py-2 text-sm text-gray-600">
+                    {new Date(batch.date).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{batch.shed_number}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{batch.handler_name}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{batch.initial_chicks.toLocaleString()}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{batch.fcr}</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{batch.mortality_percent}%</td>
+                  <td className="px-4 py-2 text-sm text-gray-900">{formatCurrency(batch.cost_per_kg)}</td>
+                  <td className="px-4 py-2 text-sm">
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => loadBatchDetails(batch.batch_id)}
+                        className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
+                        title="View/Edit Batch"
+                      >
+                        📝 Edit
+                      </button>
+                      <button
+                        onClick={() => deleteBatch(batch.batch_id)}
+                        className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
+                        title="Delete Batch"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          
+          {filteredHistory.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              {searchTerm || filterHandler || filterShed 
+                ? 'No batches match your search criteria.' 
+                : 'No batches found. Create your first batch to get started.'}
+            </div>
+          )}
+        </div>
+        
+        {editingBatch && (
+          <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-blue-800">
+              📝 <strong>Editing Mode:</strong> Batch data has been loaded into the form. 
+              Make your changes and click "Calculate Enhanced Metrics" to update the batch.
+            </p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50">
       <div className="container mx-auto px-4 py-8">
