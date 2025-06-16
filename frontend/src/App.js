@@ -389,6 +389,8 @@ function App() {
         batch_id: batch.input_data.batch_id,
         shed_number: batch.input_data.shed_number,
         handler_name: batch.input_data.handler_name,
+        entry_date: batch.input_data.entry_date ? batch.input_data.entry_date.split('T')[0] : '',
+        exit_date: batch.input_data.exit_date ? batch.input_data.exit_date.split('T')[0] : '',
         initial_chicks: batch.input_data.initial_chicks.toString(),
         chick_cost_per_unit: batch.input_data.chick_cost_per_unit.toString(),
         pre_starter_consumption: batch.input_data.pre_starter_feed.consumption_kg.toString(),
