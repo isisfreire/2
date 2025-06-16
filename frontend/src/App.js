@@ -194,8 +194,11 @@ function App() {
       const response = await axios.post(`${API}/calculate`, numericData);
       setResult(response.data);
       
-      // Reload history to include new calculation
+      // Reload history and performance data
       loadHistory();
+      loadHandlers();
+      loadSheds();
+      loadHandlerPerformance();
       
     } catch (err) {
       setError(err.response?.data?.detail || 'An error occurred during calculation');
