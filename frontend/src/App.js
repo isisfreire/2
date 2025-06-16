@@ -365,30 +365,36 @@ function App() {
             )}
 
             {/* Tab Navigation */}
-            <div className="flex border-b mb-6">
+            <div className="flex border-b mb-6 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('basic')}
-                className={`px-4 py-2 font-medium ${activeTab === 'basic' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'basic' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
                 Basic Info
               </button>
               <button
                 onClick={() => setActiveTab('feed')}
-                className={`px-4 py-2 font-medium ${activeTab === 'feed' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'feed' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
                 Feed Phases
               </button>
               <button
                 onClick={() => setActiveTab('costs')}
-                className={`px-4 py-2 font-medium ${activeTab === 'costs' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'costs' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
                 Additional Costs
               </button>
               <button
                 onClick={() => setActiveTab('removals')}
-                className={`px-4 py-2 font-medium ${activeTab === 'removals' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'removals' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
                 Removals
+              </button>
+              <button
+                onClick={() => setShowPerformanceTab(!showPerformanceTab)}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${showPerformanceTab ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+              >
+                Performance
               </button>
             </div>
 
