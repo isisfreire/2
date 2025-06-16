@@ -554,11 +554,12 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
         ['Initial Chicks', f"{calculation.input_data.initial_chicks:,}"],
         ['Chicks Died', f"{calculation.input_data.chicks_died:,}"],
         ['Surviving Chicks', f"{calculation.surviving_chicks:,}"],
-        ['Removed Chicks', f"{calculation.removed_chicks:,}"],
+        ['Viability (Caught)', f"{calculation.viability:,}"],
         ['Missing Chicks', f"{calculation.missing_chicks:,}"],
         ['Total Weight Produced', f"{calculation.total_weight_produced_kg:,} kg"],
         ['Total Feed Consumed', f"{calculation.total_feed_consumed_kg:,} kg"],
         ['Average Weight per Chick', f"{calculation.average_weight_per_chick:.2f} kg"],
+        ['Viability Rate', f"{(calculation.viability / calculation.input_data.initial_chicks * 100):.1f}%"],
     ]
     
     prod_table = Table(production_data, colWidths=[3*inch, 2*inch])
