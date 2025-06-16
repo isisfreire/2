@@ -402,8 +402,61 @@ function App() {
               {/* Basic Info Tab */}
               {activeTab === 'basic' && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-800">Basic Production Data</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">Batch & Production Data</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Batch ID *
+                      </label>
+                      <input
+                        type="text"
+                        name="batch_id"
+                        value={formData.batch_id}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., BATCH-2024-001"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Shed Number *
+                      </label>
+                      <input
+                        type="text"
+                        name="shed_number"
+                        value={formData.shed_number}
+                        onChange={handleInputChange}
+                        list="sheds-list"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., SHED-A1"
+                        required
+                      />
+                      <datalist id="sheds-list">
+                        {sheds.map(shed => <option key={shed} value={shed} />)}
+                      </datalist>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Handler Name *
+                      </label>
+                      <input
+                        type="text"
+                        name="handler_name"
+                        value={formData.handler_name}
+                        onChange={handleInputChange}
+                        list="handlers-list"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., John Smith"
+                        required
+                      />
+                      <datalist id="handlers-list">
+                        {handlers.map(handler => <option key={handler} value={handler} />)}
+                      </datalist>
+                    </div>
+
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Initial Number of Chicks *
