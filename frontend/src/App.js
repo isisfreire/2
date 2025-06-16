@@ -340,18 +340,23 @@ function App() {
 
   const deleteShed = async (shedId) => {
     console.log('Attempting to delete shed with ID:', shedId);
+    console.log('API URL being used:', API);
+    console.log('Full delete URL:', `${API}/admin/sheds/${shedId}`);
+    
     if (!window.confirm('Are you sure you want to delete this shed?')) return;
     
     try {
-      console.log('Making delete request to:', `${API}/admin/sheds/${shedId}`);
-      await axios.delete(`${API}/admin/sheds/${shedId}`);
+      console.log('Making delete request...');
+      const response = await axios.delete(`${API}/admin/sheds/${shedId}`);
+      console.log('Delete response:', response);
       alert('Shed deleted successfully');
-      loadAllSheds();
-      loadSheds();
+      await loadAllSheds();
+      await loadSheds();
     } catch (err) {
-      console.error('Delete error:', err);
-      const errorMsg = err.response?.data?.detail || 'Error deleting shed';
-      alert(errorMsg);
+      console.error('Delete error details:', err);
+      console.error('Error response:', err.response);
+      const errorMsg = err.response?.data?.detail || err.message || 'Error deleting shed';
+      alert(`Delete failed: ${errorMsg}`);
     }
   };
 
