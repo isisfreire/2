@@ -740,7 +740,156 @@ async def get_handlers():
     Get all handlers
     """
     handlers = await db.handlers.find().sort("name", 1).to_list(100)
-    return [handler["name"] for handler in handlers]
+    return [Handler(**handler) for handler in handlers]
+
+@api_router.post("/handlers", response_model=Handler)
+async def create_handler(handler_data: HandlerCreate):
+    """
+    Create a new handler
+    """
+    # Check if handler name already exists
+    existing_handler = await db.handlers.find_one({"name": handler_data.name})
+    if existing_handler:
+        raise HTTPException(status_code=400, detail=f"Handler '{handler_data.name}' already exists")
+    
+    handler = Handler(**handler_data.dict())
+    await db.handlers.insert_one(handler.dict())
+    return handler
+
+@api_router.get("/handlers/{handler_id}", response_model=Handler)
+async def get_handler(handler_id: str):
+    """
+    Get a specific handler
+    """
+    handler = await db.handlers.find_one({"id": handler_id})
+    if not handler:
+        raise HTTPException(status_code=404, detail="Handler not found")
+    return Handler(**handler)
+
+@api_router.put("/handlers/{handler_id}", response_model=Handler)
+async def update_handler(handler_id: str, handler_data: HandlerUpdate):
+    """
+    Update a handler
+    """
+    # Check if handler exists
+    existing_handler = await db.handlers.find_one({"id": handler_id})
+    if not existing_handler:
+        raise HTTPException(status_code=404, detail="Handler not found")
+    
+    # Check if new name conflicts with existing handler
+    if handler_data.name:
+        name_conflict = await db.handlers.find_one({
+            "name": handler_data.name,
+            "id": {"$ne": handler_id}
+        })
+        if name_conflict:
+            raise HTTPException(status_code=400, detail=f"Handler name '{handler_data.name}' already exists")
+    
+    # Update handler
+    update_data = {k: v for k, v in handler_data.dict().items() if v is not None}
+    await db.handlers.update_one({"id": handler_id}, {"$set": update_data})
+    
+    # Return updated handler
+    updated_handler = await db.handlers.find_one({"id": handler_id})
+    return Handler(**updated_handler)
+
+@api_router.delete("/handlers/{handler_id}")
+async def delete_handler(handler_id: str):
+    """
+    Delete a handler
+    """
+    # Check if handler has any batches
+    batch_count = await db.broiler_calculations.count_documents({"input_data.handler_name": handler_id})
+    if batch_count > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete handler. They have {batch_count} batches recorded. Archive the handler instead."
+        )
+    
+    result = await db.handlers.delete_one({"id": handler_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Handler not found")
+    
+    return {"message": "Handler deleted successfully"}
+
+# Shed Management Endpoints
+@api_router.get("/admin/sheds", response_model=List[Shed])
+async def get_all_sheds():
+    """
+    Get all sheds with full details
+    """
+    sheds = await db.sheds.find().sort("number", 1).to_list(100)
+    return [Shed(**shed) for shed in sheds]
+
+@api_router.post("/admin/sheds", response_model=Shed)
+async def create_shed(shed_data: ShedCreate):
+    """
+    Create a new shed
+    """
+    # Check if shed number already exists
+    existing_shed = await db.sheds.find_one({"number": shed_data.number})
+    if existing_shed:
+        raise HTTPException(status_code=400, detail=f"Shed '{shed_data.number}' already exists")
+    
+    shed = Shed(**shed_data.dict())
+    await db.sheds.insert_one(shed.dict())
+    return shed
+
+@api_router.get("/admin/sheds/{shed_id}", response_model=Shed)
+async def get_shed(shed_id: str):
+    """
+    Get a specific shed
+    """
+    shed = await db.sheds.find_one({"id": shed_id})
+    if not shed:
+        raise HTTPException(status_code=404, detail="Shed not found")
+    return Shed(**shed)
+
+@api_router.put("/admin/sheds/{shed_id}", response_model=Shed)
+async def update_shed(shed_id: str, shed_data: ShedUpdate):
+    """
+    Update a shed
+    """
+    # Check if shed exists
+    existing_shed = await db.sheds.find_one({"id": shed_id})
+    if not existing_shed:
+        raise HTTPException(status_code=404, detail="Shed not found")
+    
+    # Check if new number conflicts with existing shed
+    if shed_data.number:
+        number_conflict = await db.sheds.find_one({
+            "number": shed_data.number,
+            "id": {"$ne": shed_id}
+        })
+        if number_conflict:
+            raise HTTPException(status_code=400, detail=f"Shed number '{shed_data.number}' already exists")
+    
+    # Update shed
+    update_data = {k: v for k, v in shed_data.dict().items() if v is not None}
+    await db.sheds.update_one({"id": shed_id}, {"$set": update_data})
+    
+    # Return updated shed
+    updated_shed = await db.sheds.find_one({"id": shed_id})
+    return Shed(**updated_shed)
+
+@api_router.delete("/admin/sheds/{shed_id}")
+async def delete_shed(shed_id: str):
+    """
+    Delete a shed
+    """
+    # Check if shed has any batches
+    batch_count = await db.broiler_calculations.count_documents({"input_data.shed_number": shed_id})
+    if batch_count > 0:
+        raise HTTPException(
+            status_code=400, 
+            detail=f"Cannot delete shed. It has {batch_count} batches recorded."
+        )
+    
+    result = await db.sheds.delete_one({"id": shed_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Shed not found")
+    
+    return {"message": "Shed deleted successfully"}
 
 @api_router.get("/handlers/performance")
 async def get_handlers_performance():
