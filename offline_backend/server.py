@@ -488,9 +488,10 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
     )
     
     # Title and Header
-    story.append(Paragraph("BROILER BATCH CLOSURE REPORT", title_style))
+    story.append(Paragraph(t["batch_closure_report"], title_style))
     story.append(Spacer(1, 10))
-    story.append(Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", styles['Normal']))
+    current_time = datetime.now().strftime('%d de %B de %Y às %H:%M')
+    story.append(Paragraph(t["generated_on"].format(date=current_time), styles['Normal']))
     story.append(Spacer(1, 20))
     
     # Batch Information
