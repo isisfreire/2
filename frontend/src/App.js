@@ -259,11 +259,69 @@ function App() {
     setError('');
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(value);
+  // Admin functions
+  const createHandler = async (handlerData) => {
+    try {
+      await axios.post(`${API}/handlers`, handlerData);
+      loadAllHandlers();
+      loadHandlers();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error creating handler');
+    }
+  };
+
+  const updateHandler = async (handlerId, handlerData) => {
+    try {
+      await axios.put(`${API}/handlers/${handlerId}`, handlerData);
+      loadAllHandlers();
+      loadHandlers();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error updating handler');
+    }
+  };
+
+  const deleteHandler = async (handlerId) => {
+    try {
+      await axios.delete(`${API}/handlers/${handlerId}`);
+      loadAllHandlers();
+      loadHandlers();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error deleting handler');
+    }
+  };
+
+  const createShed = async (shedData) => {
+    try {
+      await axios.post(`${API}/admin/sheds`, shedData);
+      loadAllSheds();
+      loadSheds();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error creating shed');
+    }
+  };
+
+  const updateShed = async (shedId, shedData) => {
+    try {
+      await axios.put(`${API}/admin/sheds/${shedId}`, shedData);
+      loadAllSheds();
+      loadSheds();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error updating shed');
+    }
+  };
+
+  const deleteShed = async (shedId) => {
+    try {
+      await axios.delete(`${API}/admin/sheds/${shedId}`);
+      loadAllSheds();
+      loadSheds();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error deleting shed');
+    }
+  };
+
+  const downloadPDF = (filename) => {
+    window.open(`${API}/export/${filename}`, '_blank');
   };
 
   // Chart component for cost breakdown
