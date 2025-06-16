@@ -53,6 +53,9 @@ function App() {
   const [activeTab, setActiveTab] = useState('basic');
   const [showPerformanceTab, setShowPerformanceTab] = useState(false);
   const [showAdminTab, setShowAdminTab] = useState(false);
+  const [showBatchManagementTab, setShowBatchManagementTab] = useState(false);
+  const [selectedBatch, setSelectedBatch] = useState(null);
+  const [editingBatch, setEditingBatch] = useState(false);
 
   // Load calculation history on component mount
   useEffect(() => {
