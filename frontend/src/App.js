@@ -1684,6 +1684,13 @@ function App() {
                     <h3 className="text-sm font-medium text-red-600">Mortality Rate</h3>
                     <p className="text-2xl font-bold text-red-800">{result.calculation.mortality_rate_percent}%</p>
                   </div>
+                  <div className="bg-orange-50 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-orange-600">Viability Rate</h3>
+                    <p className="text-2xl font-bold text-orange-800">
+                      {((result.calculation.viability / result.calculation.input_data.initial_chicks) * 100).toFixed(1)}%
+                    </p>
+                    <p className="text-xs text-orange-600">{result.calculation.viability.toLocaleString()} caught</p>
+                  </div>
                   <div className="bg-green-50 p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-green-600">Net Cost per kg</h3>
                     <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.net_cost_per_kg)}</p>
