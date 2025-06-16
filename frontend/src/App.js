@@ -209,23 +209,23 @@ function App() {
 
       // Validate required fields
       if (!numericData.batch_id) {
-        setError('Batch ID is required');
+        setError(t.batchIdRequired);
         return;
       }
       if (!numericData.shed_number) {
-        setError('Shed number is required');
+        setError(t.shedNumberRequired);
         return;
       }
       if (!numericData.handler_name) {
-        setError('Handler name is required');
+        setError(t.handlerNameRequired);
         return;
       }
       if (!numericData.entry_date) {
-        setError('Entry date is required');
+        setError(t.entryDateRequired);
         return;
       }
       if (!numericData.exit_date) {
-        setError('Exit date is required');
+        setError(t.exitDateRequired);
         return;
       }
 
@@ -234,17 +234,17 @@ function App() {
       const exitDate = new Date(numericData.exit_date);
       
       if (exitDate <= entryDate) {
-        setError('Exit date must be after entry date');
+        setError(t.exitDateAfterEntry);
         return;
       }
 
       const daysDifference = Math.ceil((exitDate - entryDate) / (1000 * 60 * 60 * 24));
       if (daysDifference < 30) {
-        setError('Batch duration must be at least 30 days');
+        setError(t.batchDurationMinimum);
         return;
       }
       if (daysDifference > 70) {
-        setError('Batch duration cannot exceed 70 days');
+        setError(t.batchDurationMaximum);
         return;
       }
 
