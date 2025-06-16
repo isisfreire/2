@@ -218,6 +218,33 @@ function App() {
         setError('Handler name is required');
         return;
       }
+      if (!numericData.entry_date) {
+        setError('Entry date is required');
+        return;
+      }
+      if (!numericData.exit_date) {
+        setError('Exit date is required');
+        return;
+      }
+
+      // Validate date logic
+      const entryDate = new Date(numericData.entry_date);
+      const exitDate = new Date(numericData.exit_date);
+      
+      if (exitDate <= entryDate) {
+        setError('Exit date must be after entry date');
+        return;
+      }
+
+      const daysDifference = Math.ceil((exitDate - entryDate) / (1000 * 60 * 60 * 24));
+      if (daysDifference < 30) {
+        setError('Batch duration must be at least 30 days');
+        return;
+      }
+      if (daysDifference > 70) {
+        setError('Batch duration cannot exceed 70 days');
+        return;
+      }
 
       if (numericData.removal_batches.length === 0) {
         setError('At least one removal batch is required');
