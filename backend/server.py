@@ -480,17 +480,20 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
         textColor=colors.darkgreen
     )
     
-    # Title
+    # Title and Header
     story.append(Paragraph("BROILER BATCH CLOSURE REPORT", title_style))
+    story.append(Spacer(1, 10))
+    story.append(Paragraph(f"Generated on: {datetime.now().strftime('%B %d, %Y at %I:%M %p')}", styles['Normal']))
     story.append(Spacer(1, 20))
     
     # Batch Information
-    story.append(Paragraph("BATCH INFORMATION", heading_style))
+    story.append(Paragraph("BATCH IDENTIFICATION", heading_style))
     batch_data = [
         ['Batch ID:', calculation.input_data.batch_id],
         ['Shed Number:', calculation.input_data.shed_number],
         ['Handler:', calculation.input_data.handler_name],
-        ['Date:', calculation.created_at.strftime('%Y-%m-%d %H:%M')],
+        ['Start Date:', calculation.created_at.strftime('%Y-%m-%d')],
+        ['Report Generated:', datetime.now().strftime('%Y-%m-%d %H:%M')],
     ]
     
     batch_table = Table(batch_data, colWidths=[2*inch, 3*inch])
