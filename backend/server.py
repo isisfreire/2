@@ -111,6 +111,7 @@ class BroilerCalculation(BaseModel):
     surviving_chicks: int
     removed_chicks: int
     missing_chicks: int
+    viability: int  # Total chickens caught (sum of removal batches)
     total_weight_produced_kg: float
     weighted_average_age: float
     
