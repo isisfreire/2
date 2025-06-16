@@ -941,13 +941,19 @@ async def get_batch_details(batch_id: str):
 @api_router.get("/export/{filename}")
 async def download_export(filename: str):
     """
-    Download exported batch report
+    Download exported batch report (JSON or PDF)
     """
     filepath = EXPORTS_DIR / filename
     if not filepath.exists():
         raise HTTPException(status_code=404, detail="Export file not found")
     
-    return FileResponse(filepath, filename=filename)
+    # Determine content type based on file extension
+    if filename.endswith('.pdf'):
+        media_type = 'application/pdf'
+    else:
+        media_type = 'application/json'
+    
+    return FileResponse(filepath, filename=filename, media_type=media_type)
 
 @api_router.get("/sheds")
 async def get_sheds():
