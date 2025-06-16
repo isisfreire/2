@@ -486,6 +486,12 @@ function App() {
               >
                 Performance
               </button>
+              <button
+                onClick={() => setShowAdminTab(!showAdminTab)}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${showAdminTab ? 'border-b-2 border-purple-500 text-purple-600' : 'text-gray-500'}`}
+              >
+                Admin
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
