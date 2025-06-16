@@ -692,11 +692,13 @@ async def calculate_broiler_costs(input_data: BroilerCalculationInput):
         # Save calculation to database
         await db.broiler_calculations.insert_one(calculation.dict())
         
-        # Export batch report
-        filename = await export_batch_report(calculation)
+        # Export batch report (JSON and PDF)
+        json_filename = await export_batch_report(calculation)
+        pdf_filename = generate_pdf_report(calculation)
         
         # Add export info to insights
-        insights.append(f"📄 Batch report exported as: {filename}")
+        insights.append(f"📄 JSON report exported as: {json_filename}")
+        insights.append(f"📄 PDF report exported as: {pdf_filename}")
         
         return CalculationResult(calculation=calculation, insights=insights)
         
