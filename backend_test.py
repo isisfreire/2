@@ -4,6 +4,8 @@ import unittest
 import os
 from dotenv import load_dotenv
 import sys
+import time
+import uuid
 
 # Load environment variables from frontend .env file to get the backend URL
 load_dotenv('/app/frontend/.env')
@@ -24,6 +26,9 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         except Exception as e:
             print(f"Error connecting to API: {str(e)}")
             sys.exit(1)
+            
+        # Generate unique batch ID for tests
+        self.unique_batch_id = f"BATCH-TEST-{uuid.uuid4().hex[:8]}"
 
     def test_api_health(self):
         """Test API health check endpoint"""
