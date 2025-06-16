@@ -994,6 +994,74 @@ async def get_handler_performance(handler_name: str):
     
     return performance
 
+@api_router.put("/batches/{batch_id}")
+async def update_batch(batch_id: str, input_data: BroilerCalculationInput):
+    """
+    Update an existing batch calculation
+    """
+    # Check if batch exists
+    existing_batch = await db.broiler_calculations.find_one({"input_data.batch_id": batch_id})
+    if not existing_batch:
+        raise HTTPException(status_code=404, detail=f"Batch ID '{batch_id}' not found")
+    
+    # Validate input
+    if input_data.initial_chicks <= 0:
+        raise HTTPException(status_code=400, detail="Initial chicks must be greater than 0")
+    if input_data.chicks_died > input_data.initial_chicks:
+        raise HTTPException(status_code=400, detail="Chicks died cannot be more than initial chicks")
+    if not input_data.removal_batches:
+        raise HTTPException(status_code=400, detail="At least one removal batch is required")
+    
+    # Validate removal batches
+    total_removed = sum(batch.quantity for batch in input_data.removal_batches)
+    surviving_chicks = input_data.initial_chicks - input_data.chicks_died
+    if total_removed > surviving_chicks:
+        raise HTTPException(status_code=400, detail="Total removed chicks cannot exceed surviving chicks")
+    
+    # Validate ages
+    for i, batch in enumerate(input_data.removal_batches):
+        if batch.age_days < 35 or batch.age_days > 60:
+            raise HTTPException(status_code=400, detail=f"Batch {i+1}: Age must be between 35-60 days")
+        if batch.quantity <= 0:
+            raise HTTPException(status_code=400, detail=f"Batch {i+1}: Quantity must be greater than 0")
+        if batch.total_weight_kg <= 0:
+            raise HTTPException(status_code=400, detail=f"Batch {i+1}: Weight must be greater than 0")
+    
+    try:
+        # Calculate metrics
+        calculation = calculate_enhanced_broiler_metrics(input_data)
+        calculation.id = existing_batch["id"]  # Keep the same ID
+        calculation.created_at = existing_batch["created_at"]  # Keep original creation date
+        
+        # Generate insights
+        insights = generate_enhanced_insights(calculation)
+        
+        # Update handler if name changed
+        if input_data.handler_name != existing_batch["input_data"]["handler_name"]:
+            existing_handler = await db.handlers.find_one({"name": input_data.handler_name})
+            if not existing_handler:
+                handler = Handler(name=input_data.handler_name)
+                await db.handlers.insert_one(handler.dict())
+        
+        # Update the batch in database
+        await db.broiler_calculations.replace_one(
+            {"input_data.batch_id": batch_id}, 
+            calculation.dict()
+        )
+        
+        # Export updated batch report
+        json_filename = await export_batch_report(calculation)
+        pdf_filename = generate_pdf_report(calculation)
+        
+        # Add export info to insights
+        insights.append(f"📄 Updated JSON report exported as: {json_filename}")
+        insights.append(f"📄 Updated PDF report exported as: {pdf_filename}")
+        
+        return CalculationResult(calculation=calculation, insights=insights)
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Update error: {str(e)}")
+
 @api_router.get("/batches/{batch_id}")
 async def get_batch_details(batch_id: str):
     """
