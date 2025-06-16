@@ -285,15 +285,18 @@ test_plan:
 
   - task: "Comprehensive farm management system"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Implemented complete farm management system with batch tracking (batch_id, shed_number, handler_name), sawdust bedding costs, chicken bedding sale revenue, handler database, performance analytics, and export functionality."
+      - working: true
+        agent: "testing"
+        comment: "Fixed issues with the /api/sheds and /api/calculations endpoints that were causing 500 errors due to KeyError: 'input_data'. Added proper error handling to handle malformed documents in the database. Comprehensive farm management system is now working correctly with batch identification, sawdust bedding costs, chicken bedding sale revenue, and handler database."
 
   - task: "Handler performance analytics and ranking"
     implemented: true
