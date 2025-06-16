@@ -1416,6 +1416,9 @@ function App() {
         {/* Admin Tab */}
         {showAdminTab && <AdminManagement />}
 
+        {/* Batch Management Tab */}
+        {showBatchManagementTab && <BatchManagement />}
+
         {/* Full Results Display */}
         {result && (
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
