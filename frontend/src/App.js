@@ -73,10 +73,28 @@ function App() {
 
   const loadHandlers = async () => {
     try {
-      const response = await axios.get(`${API}/handlers`);
+      const response = await axios.get(`${API}/handlers/names`);
       setHandlers(response.data);
     } catch (err) {
       console.error('Error loading handlers:', err);
+    }
+  };
+
+  const loadAllHandlers = async () => {
+    try {
+      const response = await axios.get(`${API}/handlers`);
+      setAllHandlers(response.data);
+    } catch (err) {
+      console.error('Error loading all handlers:', err);
+    }
+  };
+
+  const loadAllSheds = async () => {
+    try {
+      const response = await axios.get(`${API}/admin/sheds`);
+      setAllSheds(response.data);
+    } catch (err) {
+      console.error('Error loading all sheds:', err);
     }
   };
 
