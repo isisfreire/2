@@ -1010,28 +1010,30 @@ function App() {
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batch ID</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shed</th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Chicks</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FCR</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mortality %</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Age</th>
                     <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cost/kg</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Missing</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {history.slice(0, 5).map((calc, index) => (
+                  {history.slice(0, 10).map((calc, index) => (
                     <tr key={index} className="hover:bg-gray-50">
                       <td className="px-4 py-2 text-sm text-gray-600">
-                        {new Date(calc.created_at).toLocaleDateString()}
+                        {new Date(calc.date).toLocaleDateString()}
                       </td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.input_data.initial_chicks.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.feed_conversion_ratio}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.mortality_rate_percent}%</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.weighted_average_age} days</td>
+                      <td className="px-4 py-2 text-sm font-mono text-gray-900">{calc.batch_id}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.shed_number}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.handler_name}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.initial_chicks.toLocaleString()}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.fcr}</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">{calc.mortality_percent}%</td>
+                      <td className="px-4 py-2 text-sm text-gray-900">N/A</td>
                       <td className="px-4 py-2 text-sm text-gray-900">{formatCurrency(calc.cost_per_kg)}</td>
-                      <td className={`px-4 py-2 text-sm font-semibold ${calc.missing_chicks > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                        {calc.missing_chicks}
-                      </td>
                     </tr>
                   ))}
                 </tbody>
