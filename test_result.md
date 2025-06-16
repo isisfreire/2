@@ -273,6 +273,21 @@ backend:
         agent: "testing"
         comment: "Admin shed management is working correctly. All CRUD operations (create, read, update, delete) function as expected. Duplicate shed number validation works correctly, and sheds with associated batches cannot be deleted."
 
+  - task: "Enhanced Export System"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented enhanced export system with PDF generation, JSON export, and download functionality."
+      - working: true
+        agent: "testing"
+        comment: "Enhanced export system is working correctly. Both JSON and PDF exports are generated for each batch. The PDF files are properly formatted with all required sections (batch info, performance, production, financial, removal details). Files can be downloaded with the correct content types via the /api/export/{filename} endpoint."
+        
   - task: "Enhanced date handling and batch duration calculation"
     implemented: true
     working: true
