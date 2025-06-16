@@ -850,8 +850,9 @@ function App() {
                     <p className="text-2xl font-bold text-red-800">{result.calculation.mortality_rate_percent}%</p>
                   </div>
                   <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-green-600">Cost per kg</h3>
-                    <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.cost_per_kg)}</p>
+                    <h3 className="text-sm font-medium text-green-600">Net Cost per kg</h3>
+                    <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.net_cost_per_kg)}</p>
+                    <p className="text-xs text-green-600">After bedding revenue</p>
                   </div>
                   <div className="bg-purple-50 p-4 rounded-lg">
                     <h3 className="text-sm font-medium text-purple-600">Weighted Avg Age</h3>
