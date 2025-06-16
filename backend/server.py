@@ -552,8 +552,14 @@ async def get_sheds():
     Get all shed numbers
     """
     calculations = await db.broiler_calculations.find().to_list(1000)
-    sheds = list(set(calc["input_data"]["shed_number"] for calc in calculations))
-    return sorted(sheds)
+    sheds = []
+    
+    for calc in calculations:
+        # Check if the document has the expected structure
+        if isinstance(calc, dict) and "input_data" in calc and "shed_number" in calc["input_data"]:
+            sheds.append(calc["input_data"]["shed_number"])
+    
+    return sorted(list(set(sheds)))
 
 @api_router.delete("/calculations/{calculation_id}")
 async def delete_calculation(calculation_id: str):
