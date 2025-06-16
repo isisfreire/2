@@ -195,6 +195,99 @@ backend:
         agent: "testing"
         comment: "Verified medicine costs, miscellaneous costs, and cost variations are properly tracked and included in the total cost calculation. Cost breakdown analysis correctly includes these costs with accurate percentages."
 
+  - task: "Comprehensive farm management system"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented complete farm management system with batch tracking (batch_id, shed_number, handler_name), sawdust bedding costs, chicken bedding sale revenue, handler database, performance analytics, and export functionality."
+      - working: true
+        agent: "testing"
+        comment: "Fixed issues with the /api/sheds and /api/calculations endpoints that were causing 500 errors due to KeyError: 'input_data'. Added proper error handling to handle malformed documents in the database. Comprehensive farm management system is now working correctly with batch identification, sawdust bedding costs, chicken bedding sale revenue, and handler database."
+
+  - task: "Handler performance analytics and ranking"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Built comprehensive handler performance system calculating averages across all batches for FCR, mortality, daily weight gain, cost per kg. Includes performance scoring (0-100) and ranking system."
+      - working: true
+        agent: "testing"
+        comment: "Verified handler performance analytics and ranking system is working correctly. The system properly calculates performance metrics (FCR, mortality, daily weight gain) across multiple batches for the same handler. Performance scoring (0-100) is calculated correctly using the weighted formula: FCR (35%), Mortality (35%), Daily Gain (30%). Handlers are properly ranked by their performance scores."
+      - working: false
+        agent: "testing"
+        comment: "The handler performance endpoint (/api/handlers/performance) is returning 404 Not Found. Individual handler performance endpoint (/api/handlers/{handler_name}/performance) is working correctly, but the overall ranking endpoint is not accessible."
+
+  - task: "Batch export system"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Added automatic batch report export to JSON files with complete production data, financial summary, and performance metrics. Files saved to exports/ directory."
+      - working: true
+        agent: "testing"
+        comment: "Verified batch export system is working correctly. The system automatically generates JSON export files with complete batch information including batch identification, performance metrics, production data, financial summary, and removal batches. Files are properly saved to the exports/ directory and can be downloaded via the /api/export/{filename} endpoint."
+
+  - task: "Admin Handler Management"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented admin handler management with enhanced fields (name, email, phone, notes) and CRUD operations."
+      - working: false
+        agent: "testing"
+        comment: "Basic handler management is working (create, get, update, delete), but there are issues with some features: 1) GET /api/handlers/names endpoint returns 404 Not Found, 2) Duplicate handler name validation is not working as expected, 3) Handler deletion protection for handlers with batches is not working correctly."
+
+  - task: "Admin Shed Management"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented admin shed management with details (number, capacity, location, status) and CRUD operations."
+      - working: true
+        agent: "testing"
+        comment: "Admin shed management is working correctly. All CRUD operations (create, read, update, delete) function as expected. Duplicate shed number validation works correctly, and sheds with associated batches cannot be deleted."
+
+  - task: "Enhanced Export System"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented enhanced export system with PDF generation, JSON export, and download functionality."
+      - working: true
+        agent: "testing"
+        comment: "Enhanced export system is working correctly. Both JSON and PDF exports are generated for each batch. The PDF files are properly formatted with all required sections (batch info, performance, production, financial, removal details). Files can be downloaded with the correct content types via the /api/export/{filename} endpoint."
+
 frontend:
   - task: "Broiler calculation form interface"
     implemented: true
