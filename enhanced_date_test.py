@@ -30,7 +30,7 @@ class EnhancedDateHandlingTest(unittest.TestCase):
             sys.exit(1)
             
         # Generate unique batch ID for tests
-        self.unique_batch_id = "TEST-BATCH-2024-001"
+        self.unique_batch_id = f"TEST-BATCH-{uuid.uuid4().hex[:8]}"
         
     def test_enhanced_batch_creation_with_dates(self):
         """
@@ -258,8 +258,35 @@ class EnhancedDateHandlingTest(unittest.TestCase):
         - Viability information
         - Batch duration calculation
         """
-        # Use the batch ID from the first test
-        test_batch_id = self.unique_batch_id
+        # First create a batch to test with
+        test_batch_id = f"PDF-TEST-{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            "batch_id": test_batch_id,
+            "shed_number": "SHED-PDF",
+            "handler_name": "PDF Tester",
+            "entry_date": "2024-02-01T00:00:00Z",
+            "exit_date": "2024-03-15T00:00:00Z",
+            "initial_chicks": 8000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 400, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 2000, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 6400, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 9600, "cost_per_kg": 0.35},
+            "medicine_costs": 640,
+            "miscellaneous_costs": 400,
+            "cost_variations": 240,
+            "sawdust_bedding_cost": 320,
+            "chicken_bedding_sale_revenue": 480,
+            "chicks_died": 400,
+            "removal_batches": [
+                {"quantity": 7600, "total_weight_kg": 19000, "age_days": 45}
+            ]
+        }
+        
+        # Submit the calculation
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
         
         # Regenerate PDF for the batch
         response = requests.get(f"{API_URL}/batches/{test_batch_id}/export-pdf")
@@ -282,12 +309,12 @@ class EnhancedDateHandlingTest(unittest.TestCase):
         batch = response.json()
         
         # Verify entry and exit dates
-        entry_date = batch["input_data"]["entry_date"]
-        exit_date = batch["input_data"]["exit_date"]
+        self.assertIn("2024-02-01", batch["input_data"]["entry_date"])
+        self.assertIn("2024-03-15", batch["input_data"]["exit_date"])
         
         # Verify viability
         viability = batch["viability"]
-        self.assertEqual(viability, 9500)  # Sum of removal batch quantities
+        self.assertEqual(viability, 7600)  # Sum of removal batch quantities
         
         # Verify viability equals sum of removal batch quantities
         total_removed = sum(batch["quantity"] for batch in batch["input_data"]["removal_batches"])
@@ -301,8 +328,35 @@ class EnhancedDateHandlingTest(unittest.TestCase):
         """
         Test getting batch details and verify all new fields are present
         """
-        # Use the batch ID from the first test
-        test_batch_id = self.unique_batch_id
+        # First create a batch to test with
+        test_batch_id = f"RETRIEVAL-TEST-{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            "batch_id": test_batch_id,
+            "shed_number": "SHED-RETRIEVE",
+            "handler_name": "Retrieval Tester",
+            "entry_date": "2024-03-01T00:00:00Z",
+            "exit_date": "2024-04-15T00:00:00Z",
+            "initial_chicks": 6000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 300, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 1500, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 4800, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 7200, "cost_per_kg": 0.35},
+            "medicine_costs": 480,
+            "miscellaneous_costs": 300,
+            "cost_variations": 180,
+            "sawdust_bedding_cost": 240,
+            "chicken_bedding_sale_revenue": 360,
+            "chicks_died": 300,
+            "removal_batches": [
+                {"quantity": 5700, "total_weight_kg": 14250, "age_days": 45}
+            ]
+        }
+        
+        # Submit the calculation
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
         
         # Get batch details
         response = requests.get(f"{API_URL}/batches/{test_batch_id}")
@@ -316,20 +370,19 @@ class EnhancedDateHandlingTest(unittest.TestCase):
         self.assertIn("viability", batch)
         
         # Verify dates
-        self.assertIn("2024-01-15", batch["input_data"]["entry_date"])
-        self.assertIn("2024-03-01", batch["input_data"]["exit_date"])
+        self.assertIn("2024-03-01", batch["input_data"]["entry_date"])
+        self.assertIn("2024-04-15", batch["input_data"]["exit_date"])
         
         # Verify viability calculation
-        self.assertEqual(batch["viability"], 9500)
+        self.assertEqual(batch["viability"], 5700)
         
         # Verify all calculations are correct
-        self.assertEqual(batch["surviving_chicks"], 9500)  # 10000 - 500
-        self.assertEqual(batch["removed_chicks"], 9500)  # 3000 + 6500
-        self.assertEqual(batch["missing_chicks"], 0)  # 9500 - 9500
+        self.assertEqual(batch["surviving_chicks"], 5700)  # 6000 - 300
+        self.assertEqual(batch["removed_chicks"], 5700)  # Sum of removal batch quantities
+        self.assertEqual(batch["missing_chicks"], 0)  # 5700 - 5700
         
         # Verify weighted average age calculation
-        # (3000*35 + 6500*50) / 9500 = 45.26
-        self.assertAlmostEqual(batch["weighted_average_age"], 45.3, delta=0.1)
+        self.assertAlmostEqual(batch["weighted_average_age"], 45.0, delta=0.1)
 
     def test_calculations_verification(self):
         """
