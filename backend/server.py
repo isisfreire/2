@@ -1026,10 +1026,8 @@ async def update_batch(batch_id: str, input_data: BroilerCalculationInput):
     if total_removed > surviving_chicks:
         raise HTTPException(status_code=400, detail="Total removed chicks cannot exceed surviving chicks")
     
-    # Validate ages
+    # Validate removal batches
     for i, batch in enumerate(input_data.removal_batches):
-        if batch.age_days < 35 or batch.age_days > 60:
-            raise HTTPException(status_code=400, detail=f"Batch {i+1}: Age must be between 35-60 days")
         if batch.quantity <= 0:
             raise HTTPException(status_code=400, detail=f"Batch {i+1}: Quantity must be greater than 0")
         if batch.total_weight_kg <= 0:
