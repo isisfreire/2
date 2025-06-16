@@ -386,6 +386,8 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
             "batch_id": f"BATCH-INVALID-AGE-{uuid.uuid4().hex[:8]}",
             "shed_number": "SHED-TEST",
             "handler_name": "Test Handler",
+            "entry_date": "2024-02-01T00:00:00Z",
+            "exit_date": "2024-03-17T00:00:00Z",
             "initial_chicks": 5000,
             "chick_cost_per_unit": 0.45,
             "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
