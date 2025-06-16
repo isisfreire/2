@@ -37,12 +37,22 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         data = response.json()
         self.assertEqual(data["message"], "Enhanced Broiler Farm Management System API")
 
-    def test_professional_scenario(self):
+    def test_complete_farm_scenario(self):
         """
-        Test professional scenario with 10,000 chicks, $0.45/chick, 4 feed phases,
-        medicine costs, miscellaneous costs, cost variations, and multiple removal batches
+        Test complete farm scenario with batch identification, enhanced costs, and multiple removal batches
+        as specified in the test case:
+        - Batch: "BATCH-2024-001", Shed: "SHED-A1", Handler: "John Smith"
+        - 10,000 chicks, $0.45/chick, 4 feed phases, sawdust bedding: $400, bedding sale: $600
+        - Medicine: $800, misc: $500, variations: $300, 250 died
+        - Multiple removal batches with different ages
         """
         payload = {
+            # Batch identification
+            "batch_id": self.unique_batch_id,
+            "shed_number": "SHED-A1",
+            "handler_name": "John Smith",
+            
+            # Basic data
             "initial_chicks": 10000,
             "chick_cost_per_unit": 0.45,
             
@@ -64,10 +74,12 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
                 "cost_per_kg": 0.35
             },
             
-            # Additional costs
+            # Enhanced costs
             "medicine_costs": 800,
             "miscellaneous_costs": 500,
             "cost_variations": 300,
+            "sawdust_bedding_cost": 400,
+            "chicken_bedding_sale_revenue": 600,
             
             # Mortality
             "chicks_died": 250,
@@ -87,6 +99,11 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         data = response.json()
         calculation = data["calculation"]
         insights = data["insights"]
+        
+        # Verify batch identification
+        self.assertEqual(calculation["input_data"]["batch_id"], self.unique_batch_id)
+        self.assertEqual(calculation["input_data"]["shed_number"], "SHED-A1")
+        self.assertEqual(calculation["input_data"]["handler_name"], "John Smith")
         
         # Verify basic calculations
         self.assertEqual(calculation["surviving_chicks"], 9750)
@@ -135,11 +152,18 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         # Cost variations = $300
         self.assertAlmostEqual(cost_breakdown["cost_variations"], 300.0, delta=0.01)
         
-        # Total cost = 4500 + 325 + 1125 + 3200 + 4200 + 800 + 500 + 300 = $14950
-        self.assertAlmostEqual(calculation["total_cost"], 14950.0, delta=0.01)
+        # Sawdust bedding cost = $400
+        self.assertAlmostEqual(cost_breakdown["sawdust_bedding_cost"], 400.0, delta=0.01)
         
-        # Cost per kg = 14950 / 24800 = $0.60
-        self.assertAlmostEqual(calculation["cost_per_kg"], 0.60, delta=0.01)
+        # Total cost = 4500 + 325 + 1125 + 3200 + 4200 + 800 + 500 + 300 + 400 = $15350
+        self.assertAlmostEqual(calculation["total_cost"], 15350.0, delta=0.01)
+        
+        # Total revenue (bedding sale) = $600
+        self.assertAlmostEqual(calculation["total_revenue"], 600.0, delta=0.01)
+        
+        # Net cost = 15350 - 600 = $14750
+        # Net cost per kg = 14750 / 24800 = $0.59
+        self.assertAlmostEqual(calculation["net_cost_per_kg"], 0.59, delta=0.01)
         
         # Verify percentages sum to 100%
         total_percentage = (
@@ -150,7 +174,8 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
             cost_breakdown["final_cost_percent"] +
             cost_breakdown["medicine_cost_percent"] +
             cost_breakdown["miscellaneous_cost_percent"] +
-            cost_breakdown["cost_variations_percent"]
+            cost_breakdown["cost_variations_percent"] +
+            cost_breakdown["sawdust_bedding_cost_percent"]
         )
         self.assertAlmostEqual(total_percentage, 100.0, delta=0.1)
         
@@ -174,6 +199,23 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         
         missing_insight = next((i for i in insights if "missing chicks" in i.lower()), None)
         self.assertIsNotNone(missing_insight)
+        
+        # Check for bedding revenue insight
+        bedding_insight = next((i for i in insights if "bedding sale revenue" in i.lower()), None)
+        self.assertIsNotNone(bedding_insight)
+        
+        # Check for export file insight
+        export_insight = next((i for i in insights if "batch report exported" in i.lower()), None)
+        self.assertIsNotNone(export_insight)
+        
+        # Extract filename from export insight for later tests
+        self.export_filename = export_insight.split("as: ")[1].strip()
+        
+        # Verify handler was created
+        response = requests.get(f"{API_URL}/handlers")
+        self.assertEqual(response.status_code, 200)
+        handlers = response.json()
+        self.assertIn("John Smith", handlers)
 
     def test_weighted_average_age_calculation(self):
         """Test weighted average age calculation with multiple batches at different ages"""
