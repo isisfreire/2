@@ -1122,6 +1122,16 @@ async def get_sheds():
     
     return sorted(list(set(sheds)))
 
+@api_router.delete("/batches/{batch_id}")
+async def delete_batch_by_id(batch_id: str):
+    """
+    Delete a batch by batch ID
+    """
+    result = await db.broiler_calculations.delete_one({"input_data.batch_id": batch_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Batch not found")
+    return {"message": "Batch deleted successfully"}
+
 @api_router.delete("/calculations/{calculation_id}")
 async def delete_calculation(calculation_id: str):
     """
