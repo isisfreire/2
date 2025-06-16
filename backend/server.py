@@ -499,7 +499,9 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
         ['Batch ID:', calculation.input_data.batch_id],
         ['Shed Number:', calculation.input_data.shed_number],
         ['Handler:', calculation.input_data.handler_name],
-        ['Start Date:', calculation.created_at.strftime('%Y-%m-%d')],
+        ['Entry Date:', calculation.input_data.entry_date.strftime('%Y-%m-%d')],
+        ['Exit Date:', calculation.input_data.exit_date.strftime('%Y-%m-%d')],
+        ['Batch Duration:', f"{(calculation.input_data.exit_date - calculation.input_data.entry_date).days} days"],
         ['Report Generated:', datetime.now().strftime('%Y-%m-%d %H:%M')],
     ]
     
