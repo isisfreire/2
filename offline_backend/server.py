@@ -649,8 +649,8 @@ async def calculate_broiler_costs(input_data: BroilerCalculationInput):
         pdf_filename = generate_pdf_report(calculation)
         
         # Add export info to insights
-        insights.append(f"📄 JSON report exported as: {json_filename}")
-        insights.append(f"📄 PDF report exported as: {pdf_filename}")
+        insights.append(t["json_exported"].format(filename=json_filename))
+        insights.append(t["pdf_exported"].format(filename=pdf_filename))
         
         return CalculationResult(calculation=calculation, insights=insights)
         
