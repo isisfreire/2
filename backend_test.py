@@ -29,6 +29,9 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
             
         # Generate unique batch ID for tests
         self.unique_batch_id = f"BATCH-TEST-{uuid.uuid4().hex[:8]}"
+        
+        # Generate unique handler name for performance tests
+        self.unique_handler_name = f"Handler-{uuid.uuid4().hex[:8]}"
 
     def test_api_health(self):
         """Test API health check endpoint"""
