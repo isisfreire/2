@@ -473,17 +473,23 @@ async def get_calculations():
     summaries = []
     
     for calc in calculations:
-        summary = BatchSummary(
-            batch_id=calc["input_data"]["batch_id"],
-            shed_number=calc["input_data"]["shed_number"],
-            handler_name=calc["input_data"]["handler_name"],
-            date=calc["created_at"],
-            initial_chicks=calc["input_data"]["initial_chicks"],
-            fcr=calc["feed_conversion_ratio"],
-            mortality_percent=calc["mortality_rate_percent"],
-            cost_per_kg=calc["net_cost_per_kg"]
-        )
-        summaries.append(summary)
+        # Check if the document has the expected structure
+        if isinstance(calc, dict) and "input_data" in calc:
+            try:
+                summary = BatchSummary(
+                    batch_id=calc["input_data"]["batch_id"],
+                    shed_number=calc["input_data"]["shed_number"],
+                    handler_name=calc["input_data"]["handler_name"],
+                    date=calc["created_at"],
+                    initial_chicks=calc["input_data"]["initial_chicks"],
+                    fcr=calc["feed_conversion_ratio"],
+                    mortality_percent=calc["mortality_rate_percent"],
+                    cost_per_kg=calc["net_cost_per_kg"]
+                )
+                summaries.append(summary)
+            except (KeyError, TypeError):
+                # Skip malformed documents
+                continue
     
     return summaries
 
