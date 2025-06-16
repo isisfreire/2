@@ -315,15 +315,18 @@ test_plan:
 
   - task: "Batch export system"
     implemented: true
-    working: "NA"
+    working: true
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: "NA"
         agent: "main"
         comment: "Added automatic batch report export to JSON files with complete production data, financial summary, and performance metrics. Files saved to exports/ directory."
+      - working: true
+        agent: "testing"
+        comment: "Verified batch export system is working correctly. The system automatically generates JSON export files with complete batch information including batch identification, performance metrics, production data, financial summary, and removal batches. Files are properly saved to the exports/ directory and can be downloaded via the /api/export/{filename} endpoint."
 
 frontend:
   - task: "Farm management interface with batch identification"
