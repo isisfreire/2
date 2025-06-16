@@ -209,6 +209,9 @@ function App() {
 
   const resetForm = () => {
     setFormData({
+      batch_id: '',
+      shed_number: '',
+      handler_name: '',
       initial_chicks: '',
       chick_cost_per_unit: '',
       pre_starter_consumption: '',
@@ -222,6 +225,8 @@ function App() {
       medicine_costs: '',
       miscellaneous_costs: '',
       cost_variations: '',
+      sawdust_bedding_cost: '',
+      chicken_bedding_sale_revenue: '',
       chicks_died: ''
     });
     setRemovalBatches([{ quantity: '', total_weight_kg: '', age_days: '' }]);
