@@ -656,7 +656,7 @@ function App() {
               {/* Additional Costs Tab */}
               {activeTab === 'costs' && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-800">Additional Costs</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">Additional Costs & Revenue</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -685,6 +685,36 @@ function App() {
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         placeholder="e.g., 500"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Sawdust Bedding Cost ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="sawdust_bedding_cost"
+                        value={formData.sawdust_bedding_cost}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 400"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Chicken Bedding Sale Revenue ($)
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="chicken_bedding_sale_revenue"
+                        value={formData.chicken_bedding_sale_revenue}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder="e.g., 600"
                       />
                     </div>
 
