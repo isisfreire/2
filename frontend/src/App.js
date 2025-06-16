@@ -1338,11 +1338,28 @@ function App() {
             <div className="bg-white rounded-xl shadow-lg p-6">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">Business Insights</h2>
               <div className="space-y-3">
-                {result.insights.map((insight, index) => (
-                  <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
-                    {insight}
-                  </div>
-                ))}
+                {result.insights.map((insight, index) => {
+                  // Check if this is a PDF export insight
+                  if (insight.includes('PDF report exported as:')) {
+                    const filename = insight.split('as: ')[1].trim();
+                    return (
+                      <div key={index} className="bg-green-50 p-3 rounded-lg text-sm flex justify-between items-center">
+                        <span>{insight}</span>
+                        <button
+                          onClick={() => downloadPDF(filename)}
+                          className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
+                        >
+                          Download PDF
+                        </button>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
+                      {insight}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
