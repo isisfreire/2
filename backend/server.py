@@ -213,6 +213,7 @@ def calculate_enhanced_broiler_metrics(input_data: BroilerCalculationInput) -> B
     
     # Calculate removal totals
     removed_chicks = sum(batch.quantity for batch in input_data.removal_batches)
+    viability = removed_chicks  # Total chickens successfully caught
     total_weight_produced_kg = sum(batch.total_weight_kg for batch in input_data.removal_batches)
     missing_chicks = surviving_chicks - removed_chicks
     
