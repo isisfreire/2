@@ -1717,6 +1717,33 @@ function App() {
                     <span className="font-semibold">{result.calculation.input_data.handler_name}</span>
                   </div>
                   <div className="flex justify-between">
+                    <span className="text-gray-600">Entry Date:</span>
+                    <span className="font-semibold">
+                      {result.calculation.input_data.entry_date ? 
+                        new Date(result.calculation.input_data.entry_date).toLocaleDateString() : 
+                        'Not set'
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Exit Date:</span>
+                    <span className="font-semibold">
+                      {result.calculation.input_data.exit_date ? 
+                        new Date(result.calculation.input_data.exit_date).toLocaleDateString() : 
+                        'Not set'
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Batch Duration:</span>
+                    <span className="font-semibold">
+                      {result.calculation.input_data.entry_date && result.calculation.input_data.exit_date ? 
+                        Math.ceil((new Date(result.calculation.input_data.exit_date) - new Date(result.calculation.input_data.entry_date)) / (1000 * 60 * 60 * 24)) + ' days' :
+                        'N/A'
+                      }
+                    </span>
+                  </div>
+                  <div className="flex justify-between border-t pt-2">
                     <span className="text-gray-600">Initial Chicks:</span>
                     <span className="font-semibold">{result.calculation.input_data.initial_chicks.toLocaleString()}</span>
                   </div>
@@ -1725,8 +1752,14 @@ function App() {
                     <span className="font-semibold">{result.calculation.surviving_chicks.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Removed Chicks:</span>
-                    <span className="font-semibold">{result.calculation.removed_chicks.toLocaleString()}</span>
+                    <span className="text-gray-600">Viability (Caught):</span>
+                    <span className="font-semibold text-green-600">{result.calculation.viability.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Viability Rate:</span>
+                    <span className="font-semibold text-green-600">
+                      {((result.calculation.viability / result.calculation.input_data.initial_chicks) * 100).toFixed(1)}%
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Missing Chicks:</span>
