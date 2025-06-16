@@ -851,6 +851,7 @@ function App() {
                       </button>
                       <button
                         onClick={() => {
+                          console.log('Delete button clicked for shed:', shed.id);
                           if (window.confirm(`Delete shed "${shed.number}"? This action cannot be undone.`)) {
                             deleteShed(shed.id);
                           }
