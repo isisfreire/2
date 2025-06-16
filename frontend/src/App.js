@@ -878,6 +878,12 @@ function App() {
               >
                 Admin
               </button>
+              <button
+                onClick={() => setShowBatchManagementTab(!showBatchManagementTab)}
+                className={`px-4 py-2 font-medium whitespace-nowrap ${showBatchManagementTab ? 'border-b-2 border-orange-500 text-orange-600' : 'text-gray-500'}`}
+              >
+                Batch Management
+              </button>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
