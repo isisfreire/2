@@ -27,12 +27,21 @@ from database import db
 from translations_pt import BACKEND_TRANSLATIONS as t
 
 # Create FastAPI app
-app = FastAPI(title="Offline Broiler Farm Management System")
+app = FastAPI(title="Sistema de Gerenciamento de Granjas de Frango")
 api_router = APIRouter(prefix="/api")
 
 # Create directories for exports
 EXPORTS_DIR = Path("exports")
 EXPORTS_DIR.mkdir(exist_ok=True)
+
+# Ensure database is initialized
+print("🔧 Inicializando banco de dados...")
+try:
+    db.init_database()
+    print("✅ Banco de dados inicializado com sucesso!")
+except Exception as e:
+    print(f"❌ Erro ao inicializar banco: {e}")
+    raise
 
 # Pydantic Models (same as original)
 class RemovalBatch(BaseModel):
