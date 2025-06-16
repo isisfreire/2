@@ -841,7 +841,7 @@ function App() {
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Delete shed "${shed.number}"?`)) {
+                          if (window.confirm(`Delete shed "${shed.number}"? This action cannot be undone.`)) {
                             deleteShed(shed.id);
                           }
                         }}
@@ -855,6 +855,82 @@ function App() {
               </tbody>
             </table>
           </div>
+
+          {/* Shed Edit Modal */}
+          {editingShed && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                <h4 className="text-lg font-semibold mb-4">Edit Shed: {editingShed.number}</h4>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  handleUpdateShed(editingShed.id, {
+                    number: formData.get('number'),
+                    capacity: formData.get('capacity') ? parseInt(formData.get('capacity')) : null,
+                    location: formData.get('location') || null,
+                    status: formData.get('status'),
+                    notes: formData.get('notes') || null
+                  });
+                }}>
+                  <div className="space-y-4">
+                    <input
+                      name="number"
+                      type="text"
+                      placeholder="Shed Number *"
+                      defaultValue={editingShed.number}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                    <input
+                      name="capacity"
+                      type="number"
+                      placeholder="Capacity (optional)"
+                      defaultValue={editingShed.capacity || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <input
+                      name="location"
+                      type="text"
+                      placeholder="Location (optional)"
+                      defaultValue={editingShed.location || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <select
+                      name="status"
+                      defaultValue={editingShed.status}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    >
+                      <option value="active">Active</option>
+                      <option value="maintenance">Maintenance</option>
+                      <option value="inactive">Inactive</option>
+                    </select>
+                    <input
+                      name="notes"
+                      type="text"
+                      placeholder="Notes (optional)"
+                      defaultValue={editingShed.notes || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div className="flex space-x-3 mt-6">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+                    >
+                      Update Shed
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingShed(null)}
+                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
