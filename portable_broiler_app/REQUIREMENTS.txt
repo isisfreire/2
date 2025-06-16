@@ -1,0 +1,11 @@
+System Requirements:
+- Python 3.7 or higher
+- Web browser (Chrome, Firefox, Edge, Safari)
+- 50MB free disk space
+- Windows 10+, macOS 10.14+, or Linux
+
+Python packages included:
+- FastAPI
+- Uvicorn
+- Pydantic
+- ReportLab (for PDF generation)
