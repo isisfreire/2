@@ -1139,6 +1139,13 @@ function App() {
           <p className="text-lg text-gray-600">
             Professional poultry production cost analysis with detailed feed phases and removal tracking
           </p>
+          {/* Temporary API Test Button */}
+          <button 
+            onClick={testAPI}
+            className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700"
+          >
+            🔧 Test API Connection
+          </button>
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
