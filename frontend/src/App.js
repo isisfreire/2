@@ -668,7 +668,7 @@ function App() {
                       </button>
                       <button
                         onClick={() => {
-                          if (window.confirm(`Delete handler "${handler.name}"?`)) {
+                          if (window.confirm(`Delete handler "${handler.name}"? This action cannot be undone.`)) {
                             deleteHandler(handler.id);
                           }
                         }}
@@ -682,6 +682,72 @@ function App() {
               </tbody>
             </table>
           </div>
+
+          {/* Handler Edit Modal */}
+          {editingHandler && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
+                <h4 className="text-lg font-semibold mb-4">Edit Handler: {editingHandler.name}</h4>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.target);
+                  handleUpdateHandler(editingHandler.id, {
+                    name: formData.get('name'),
+                    email: formData.get('email') || null,
+                    phone: formData.get('phone') || null,
+                    notes: formData.get('notes') || null
+                  });
+                }}>
+                  <div className="space-y-4">
+                    <input
+                      name="name"
+                      type="text"
+                      placeholder="Handler Name *"
+                      defaultValue={editingHandler.name}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      required
+                    />
+                    <input
+                      name="email"
+                      type="email"
+                      placeholder="Email (optional)"
+                      defaultValue={editingHandler.email || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <input
+                      name="phone"
+                      type="tel"
+                      placeholder="Phone (optional)"
+                      defaultValue={editingHandler.phone || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                    <input
+                      name="notes"
+                      type="text"
+                      placeholder="Notes (optional)"
+                      defaultValue={editingHandler.notes || ''}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    />
+                  </div>
+                  <div className="flex space-x-3 mt-6">
+                    <button
+                      type="submit"
+                      className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
+                    >
+                      Update Handler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setEditingHandler(null)}
+                      className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Shed Management */}
