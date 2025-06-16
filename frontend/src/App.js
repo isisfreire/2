@@ -870,6 +870,18 @@ function App() {
                 <h2 className="text-xl font-semibold text-gray-800 mb-4">Production Summary</h2>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between">
+                    <span className="text-gray-600">Batch ID:</span>
+                    <span className="font-semibold">{result.calculation.input_data.batch_id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Shed:</span>
+                    <span className="font-semibold">{result.calculation.input_data.shed_number}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Handler:</span>
+                    <span className="font-semibold">{result.calculation.input_data.handler_name}</span>
+                  </div>
+                  <div className="flex justify-between">
                     <span className="text-gray-600">Initial Chicks:</span>
                     <span className="font-semibold">{result.calculation.input_data.initial_chicks.toLocaleString()}</span>
                   </div>
@@ -895,6 +907,12 @@ function App() {
                     <span className="text-gray-600">Total Feed Consumed:</span>
                     <span className="font-semibold">{result.calculation.total_feed_consumed_kg.toLocaleString()} kg</span>
                   </div>
+                  {result.calculation.total_revenue > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Bedding Revenue:</span>
+                      <span className="font-semibold">{formatCurrency(result.calculation.total_revenue)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
