@@ -1670,9 +1670,7 @@ function App() {
                               value={batch.age_days}
                               onChange={(e) => handleRemovalBatchChange(index, 'age_days', e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                              placeholder="35-50"
-                              min="35"
-                              max="60"
+                              placeholder="e.g., 42"
                             />
                           </div>
                         </div>
