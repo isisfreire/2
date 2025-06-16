@@ -25,6 +25,7 @@ from database import db
 
 # Create FastAPI app
 app = FastAPI(title="Offline Broiler Farm Management System")
+api_router = APIRouter(prefix="/api")
 
 # Create directories for exports
 EXPORTS_DIR = Path("exports")
