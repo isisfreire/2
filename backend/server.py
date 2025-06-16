@@ -287,6 +287,7 @@ def calculate_enhanced_broiler_metrics(input_data: BroilerCalculationInput) -> B
         surviving_chicks=surviving_chicks,
         removed_chicks=removed_chicks,
         missing_chicks=missing_chicks,
+        viability=viability,
         total_weight_produced_kg=round(total_weight_produced_kg, 2),
         weighted_average_age=round(weighted_average_age, 1),
         total_feed_consumed_kg=round(total_feed_consumed_kg, 2),
