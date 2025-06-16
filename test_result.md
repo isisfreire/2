@@ -354,10 +354,7 @@ frontend:
         comment: "Added performance tab showing handler rankings with FCR, mortality, daily gain averages, performance scores, and visual progress bars. Highlights top performer."
 
 test_plan:
-  current_focus:
-    - "Comprehensive farm management system"
-    - "Handler performance analytics and ranking"
-    - "Batch export system"
+  current_focus: []
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
