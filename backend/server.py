@@ -891,7 +891,13 @@ async def delete_shed(shed_id: str):
     
     return {"message": "Shed deleted successfully"}
 
-@api_router.get("/handlers/performance")
+@api_router.get("/handlers/names")
+async def get_handler_names():
+    """
+    Get all handler names for dropdown
+    """
+    handlers = await db.handlers.find().sort("name", 1).to_list(100)
+    return [handler["name"] for handler in handlers]
 async def get_handlers_performance():
     """
     Get performance analysis for all handlers
