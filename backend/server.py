@@ -450,6 +450,194 @@ async def export_batch_report(calculation: BroilerCalculation) -> str:
     
     return filename
 
+def generate_pdf_report(calculation: BroilerCalculation) -> str:
+    """
+    Generate a professional PDF report for batch closure
+    """
+    filename = f"batch_report_{calculation.input_data.batch_id}_{calculation.input_data.shed_number}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+    filepath = EXPORTS_DIR / filename
+    
+    # Create PDF document
+    doc = SimpleDocTemplate(str(filepath), pagesize=A4)
+    story = []
+    styles = getSampleStyleSheet()
+    
+    # Custom styles
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=18,
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        textColor=colors.darkblue
+    )
+    
+    heading_style = ParagraphStyle(
+        'CustomHeading',
+        parent=styles['Heading2'],
+        fontSize=14,
+        spaceAfter=12,
+        textColor=colors.darkgreen
+    )
+    
+    # Title
+    story.append(Paragraph("BROILER BATCH CLOSURE REPORT", title_style))
+    story.append(Spacer(1, 20))
+    
+    # Batch Information
+    story.append(Paragraph("BATCH INFORMATION", heading_style))
+    batch_data = [
+        ['Batch ID:', calculation.input_data.batch_id],
+        ['Shed Number:', calculation.input_data.shed_number],
+        ['Handler:', calculation.input_data.handler_name],
+        ['Date:', calculation.created_at.strftime('%Y-%m-%d %H:%M')],
+    ]
+    
+    batch_table = Table(batch_data, colWidths=[2*inch, 3*inch])
+    batch_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (0, -1), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('VALIGN', (0, 0), (-1, -1), 'TOP'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (0, -1), colors.lightgrey),
+    ]))
+    story.append(batch_table)
+    story.append(Spacer(1, 20))
+    
+    # Performance Summary
+    story.append(Paragraph("PERFORMANCE SUMMARY", heading_style))
+    performance_data = [
+        ['Metric', 'Value', 'Status'],
+        ['Feed Conversion Ratio', f"{calculation.feed_conversion_ratio}", 
+         'Excellent' if calculation.feed_conversion_ratio <= 1.8 else 'Good' if calculation.feed_conversion_ratio <= 2.2 else 'Average'],
+        ['Mortality Rate', f"{calculation.mortality_rate_percent}%",
+         'Excellent' if calculation.mortality_rate_percent <= 3 else 'Good' if calculation.mortality_rate_percent <= 7 else 'Needs Attention'],
+        ['Weighted Average Age', f"{calculation.weighted_average_age} days", 'Optimal'],
+        ['Daily Weight Gain', f"{calculation.daily_weight_gain} kg", 
+         'Excellent' if calculation.daily_weight_gain >= 0.065 else 'Good' if calculation.daily_weight_gain >= 0.055 else 'Average'],
+        ['Net Cost per kg', f"${calculation.net_cost_per_kg:.2f}", 'Calculated']
+    ]
+    
+    perf_table = Table(performance_data, colWidths=[2.5*inch, 1.5*inch, 1.5*inch])
+    perf_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.darkblue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.lightblue),
+    ]))
+    story.append(perf_table)
+    story.append(Spacer(1, 20))
+    
+    # Production Data
+    story.append(Paragraph("PRODUCTION DATA", heading_style))
+    production_data = [
+        ['Parameter', 'Count/Amount'],
+        ['Initial Chicks', f"{calculation.input_data.initial_chicks:,}"],
+        ['Chicks Died', f"{calculation.input_data.chicks_died:,}"],
+        ['Surviving Chicks', f"{calculation.surviving_chicks:,}"],
+        ['Removed Chicks', f"{calculation.removed_chicks:,}"],
+        ['Missing Chicks', f"{calculation.missing_chicks:,}"],
+        ['Total Weight Produced', f"{calculation.total_weight_produced_kg:,} kg"],
+        ['Total Feed Consumed', f"{calculation.total_feed_consumed_kg:,} kg"],
+        ['Average Weight per Chick', f"{calculation.average_weight_per_chick:.2f} kg"],
+    ]
+    
+    prod_table = Table(production_data, colWidths=[3*inch, 2*inch])
+    prod_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN', (1, 1), (1, -1), 'RIGHT'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -1), 1, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.darkgreen),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.lightgreen),
+    ]))
+    story.append(prod_table)
+    story.append(Spacer(1, 20))
+    
+    # Financial Summary
+    story.append(Paragraph("FINANCIAL SUMMARY", heading_style))
+    financial_data = [
+        ['Cost Category', 'Amount', 'Percentage'],
+        ['Chick Cost', f"${calculation.cost_breakdown.chick_cost:.2f}", f"{calculation.cost_breakdown.chick_cost_percent}%"],
+        ['Pre-starter Feed', f"${calculation.cost_breakdown.pre_starter_cost:.2f}", f"{calculation.cost_breakdown.pre_starter_cost_percent}%"],
+        ['Starter Feed', f"${calculation.cost_breakdown.starter_cost:.2f}", f"{calculation.cost_breakdown.starter_cost_percent}%"],
+        ['Growth Feed', f"${calculation.cost_breakdown.growth_cost:.2f}", f"{calculation.cost_breakdown.growth_cost_percent}%"],
+        ['Final Feed', f"${calculation.cost_breakdown.final_cost:.2f}", f"{calculation.cost_breakdown.final_cost_percent}%"],
+        ['Medicine', f"${calculation.cost_breakdown.medicine_cost:.2f}", f"{calculation.cost_breakdown.medicine_cost_percent}%"],
+        ['Miscellaneous', f"${calculation.cost_breakdown.miscellaneous_cost:.2f}", f"{calculation.cost_breakdown.miscellaneous_cost_percent}%"],
+        ['Sawdust Bedding', f"${calculation.cost_breakdown.sawdust_bedding_cost:.2f}", f"{calculation.cost_breakdown.sawdust_bedding_cost_percent}%"],
+        ['Cost Variations', f"${calculation.cost_breakdown.cost_variations:.2f}", f"{calculation.cost_breakdown.cost_variations_percent}%"],
+        ['', '', ''],
+        ['TOTAL COST', f"${calculation.total_cost:.2f}", '100%'],
+        ['Bedding Revenue', f"-${calculation.total_revenue:.2f}", ''],
+        ['NET COST', f"${calculation.total_cost - calculation.total_revenue:.2f}", ''],
+    ]
+    
+    fin_table = Table(financial_data, colWidths=[2.5*inch, 1.5*inch, 1*inch])
+    fin_table.setStyle(TableStyle([
+        ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTNAME', (0, -3), (-1, -1), 'Helvetica-Bold'),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('ALIGN', (1, 1), (-1, -1), 'RIGHT'),
+        ('ALIGN', (2, 1), (-1, -1), 'CENTER'),
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID', (0, 0), (-1, -4), 1, colors.black),
+        ('GRID', (0, -3), (-1, -1), 2, colors.black),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.orange),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+        ('BACKGROUND', (0, 1), (-1, -4), colors.lightyellow),
+        ('BACKGROUND', (0, -3), (-1, -1), colors.lightcoral),
+    ]))
+    story.append(fin_table)
+    story.append(Spacer(1, 20))
+    
+    # Removal Batches Detail
+    if calculation.input_data.removal_batches:
+        story.append(Paragraph("REMOVAL BATCHES DETAIL", heading_style))
+        removal_data = [['Batch #', 'Quantity', 'Weight (kg)', 'Age (days)', 'Avg Weight/Bird (kg)']]
+        
+        for i, batch in enumerate(calculation.input_data.removal_batches, 1):
+            avg_weight = batch.total_weight_kg / batch.quantity if batch.quantity > 0 else 0
+            removal_data.append([
+                str(i),
+                f"{batch.quantity:,}",
+                f"{batch.total_weight_kg:,.1f}",
+                str(batch.age_days),
+                f"{avg_weight:.2f}"
+            ])
+        
+        removal_table = Table(removal_data, colWidths=[0.8*inch, 1.2*inch, 1.2*inch, 1*inch, 1.3*inch])
+        removal_table.setStyle(TableStyle([
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('GRID', (0, 0), (-1, -1), 1, colors.black),
+            ('BACKGROUND', (0, 0), (-1, 0), colors.purple),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.lavender),
+        ]))
+        story.append(removal_table)
+    
+    # Generate PDF
+    doc.build(story)
+    
+    return filename
+
 # API Routes
 @api_router.get("/")
 async def root():
