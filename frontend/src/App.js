@@ -324,6 +324,13 @@ function App() {
     window.open(`${API}/export/${filename}`, '_blank');
   };
 
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD'
+    }).format(value);
+  };
+
   // Chart component for cost breakdown
   const CostBreakdownChart = ({ costBreakdown }) => {
     const data = [
