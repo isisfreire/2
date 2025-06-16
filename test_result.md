@@ -288,6 +288,21 @@ backend:
         agent: "testing"
         comment: "Enhanced export system is working correctly. Both JSON and PDF exports are generated for each batch. The PDF files are properly formatted with all required sections (batch info, performance, production, financial, removal details). Files can be downloaded with the correct content types via the /api/export/{filename} endpoint."
         
+  - task: "Enhanced date handling and batch duration calculation"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: "NA"
+        agent: "main"
+        comment: "Implemented enhanced date handling with entry_date and exit_date fields in BroilerCalculationInput model. Added batch duration calculation in PDF reports."
+      - working: true
+        agent: "testing"
+        comment: "Verified date handling works correctly. The API properly accepts and stores entry_date and exit_date fields, calculates batch duration, and includes this information in PDF reports. Created comprehensive test suite in enhanced_date_test.py that tests all date-related features."
+        
   - task: "Viability calculation and tracking"
     implemented: true
     working: true
