@@ -1424,7 +1424,7 @@ function App() {
                   disabled={loading}
                   className="flex-1 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 font-medium"
                 >
-                  {loading ? 'Calculating...' : '📊 Calculate Enhanced Metrics'}
+                  {loading ? 'Processing...' : editingBatch ? '🔄 Update Batch' : '📊 Calculate Enhanced Metrics'}
                 </button>
                 <button
                   type="button"
