@@ -425,18 +425,8 @@ function App() {
     if (!window.confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
     
     try {
-      console.log('Making delete request to:', `${API}/calculations/${batchId}`);
-      // First try to find the calculation by batch_id
-      const calculations = await axios.get(`${API}/calculations`);
-      const batchToDelete = calculations.data.find(batch => batch.batch_id === batchId);
-      
-      if (!batchToDelete) {
-        alert('Batch not found');
-        return;
-      }
-
-      // Delete using the internal calculation ID, not the batch_id
-      await axios.delete(`${API}/calculations/${batchToDelete.id || batchId}`);
+      console.log('Making delete request to:', `${API}/batches/${batchId}`);
+      await axios.delete(`${API}/batches/${batchId}`);
       alert('Batch deleted successfully');
       loadHistory();
     } catch (err) {
