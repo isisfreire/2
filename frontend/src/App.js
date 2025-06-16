@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
 import axios from "axios";
+import translations from "./translations";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
+const t = translations; // Abreviação para facilitar o uso
 
 console.log('Frontend starting with API URL:', API);
 
