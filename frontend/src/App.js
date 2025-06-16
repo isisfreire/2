@@ -333,7 +333,72 @@ function App() {
   };
 
   const downloadPDF = (filename) => {
-    window.open(`${API}/export/${filename}`, '_blank');
+    // Create a temporary link and click it to download the file
+    const downloadUrl = `${API}/export/${filename}`;
+    const link = document.createElement('a');
+    link.href = downloadUrl;
+    link.download = filename;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const loadBatchDetails = async (batchId) => {
+    try {
+      const response = await axios.get(`${API}/batches/${batchId}`);
+      setSelectedBatch(response.data);
+      setEditingBatch(true);
+      // Populate form with batch data
+      const batch = response.data;
+      setFormData({
+        batch_id: batch.input_data.batch_id,
+        shed_number: batch.input_data.shed_number,
+        handler_name: batch.input_data.handler_name,
+        initial_chicks: batch.input_data.initial_chicks.toString(),
+        chick_cost_per_unit: batch.input_data.chick_cost_per_unit.toString(),
+        pre_starter_consumption: batch.input_data.pre_starter_feed.consumption_kg.toString(),
+        pre_starter_cost_per_kg: batch.input_data.pre_starter_feed.cost_per_kg.toString(),
+        starter_consumption: batch.input_data.starter_feed.consumption_kg.toString(),
+        starter_cost_per_kg: batch.input_data.starter_feed.cost_per_kg.toString(),
+        growth_consumption: batch.input_data.growth_feed.consumption_kg.toString(),
+        growth_cost_per_kg: batch.input_data.growth_feed.cost_per_kg.toString(),
+        final_consumption: batch.input_data.final_feed.consumption_kg.toString(),
+        final_cost_per_kg: batch.input_data.final_feed.cost_per_kg.toString(),
+        medicine_costs: batch.input_data.medicine_costs.toString(),
+        miscellaneous_costs: batch.input_data.miscellaneous_costs.toString(),
+        cost_variations: batch.input_data.cost_variations.toString(),
+        sawdust_bedding_cost: batch.input_data.sawdust_bedding_cost.toString(),
+        chicken_bedding_sale_revenue: batch.input_data.chicken_bedding_sale_revenue.toString(),
+        chicks_died: batch.input_data.chicks_died.toString()
+      });
+      
+      // Set removal batches
+      setRemovalBatches(batch.input_data.removal_batches.map(rb => ({
+        quantity: rb.quantity.toString(),
+        total_weight_kg: rb.total_weight_kg.toString(),
+        age_days: rb.age_days.toString()
+      })));
+      
+      // Switch to basic tab to show the loaded data
+      setActiveTab('basic');
+      setShowBatchManagementTab(false);
+    } catch (err) {
+      alert('Error loading batch details: ' + (err.response?.data?.detail || err.message));
+    }
+  };
+
+  const deleteBatch = async (batchId) => {
+    if (!window.confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
+    
+    try {
+      await axios.delete(`${API}/calculations/${batchId}`);
+      alert('Batch deleted successfully');
+      loadHistory();
+    } catch (err) {
+      const errorMsg = err.response?.data?.detail || 'Error deleting batch';
+      alert(errorMsg);
+    }
   };
 
   const formatCurrency = (value) => {
