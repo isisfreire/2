@@ -295,6 +295,26 @@ function App() {
     }
   };
 
+  const createShed = async (shedData) => {
+    try {
+      await axios.post(`${API}/admin/sheds`, shedData);
+      loadAllSheds();
+      loadSheds();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error creating shed');
+    }
+  };
+
+  const updateShed = async (shedId, shedData) => {
+    try {
+      await axios.put(`${API}/admin/sheds/${shedId}`, shedData);
+      loadAllSheds();
+      loadSheds();
+    } catch (err) {
+      alert(err.response?.data?.detail || 'Error updating shed');
+    }
+  };
+
   const deleteShed = async (shedId) => {
     if (!window.confirm('Are you sure you want to delete this shed?')) return;
     
