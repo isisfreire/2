@@ -115,6 +115,7 @@ function App() {
       setHandlerPerformance(response.data);
     } catch (err) {
       console.error('Error loading handler performance:', err);
+      setHandlerPerformance([]); // Set empty array on error
     }
   };
 
