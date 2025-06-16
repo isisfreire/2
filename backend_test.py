@@ -818,4 +818,26 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         self.assertEqual(response.status_code, 404)
 
 if __name__ == "__main__":
-    unittest.main(argv=['first-arg-is-ignored'], exit=False)
+    # Run the tests
+    print("Starting Enhanced Broiler Farm Management System API Tests...")
+    print(f"API URL: {API_URL}")
+    
+    # Create a test suite with all tests
+    suite = unittest.TestLoader().loadTestsFromTestCase(EnhancedBroilerCalculatorAPITest)
+    
+    # Run the tests
+    result = unittest.TextTestRunner().run(suite)
+    
+    # Print summary
+    print(f"\nTest Summary:")
+    print(f"Ran {result.testsRun} tests")
+    print(f"Failures: {len(result.failures)}")
+    print(f"Errors: {len(result.errors)}")
+    
+    # Exit with appropriate code
+    if result.wasSuccessful():
+        print("All tests passed successfully!")
+        sys.exit(0)
+    else:
+        print("Tests failed. See above for details.")
+        sys.exit(1)
