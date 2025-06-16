@@ -1,0 +1,55 @@
+{
+  "batch_info": {
+    "batch_id": "BATCH-COST-0deff365",
+    "shed_number": "SHED-C1",
+    "handler_name": "Cost Tester",
+    "date": "2025-06-16T01:14:18.375205"
+  },
+  "performance_metrics": {
+    "feed_conversion_ratio": 0.93,
+    "mortality_rate_percent": 2.5,
+    "weighted_average_age": 45.0,
+    "daily_weight_gain": 0.058,
+    "cost_per_kg": 0.56
+  },
+  "production_data": {
+    "initial_chicks": 10000,
+    "surviving_chicks": 9750,
+    "removed_chicks": 9500,
+    "missing_chicks": 250,
+    "total_weight_produced_kg": 24800.0,
+    "total_feed_consumed_kg": 23000.0
+  },
+  "financial_summary": {
+    "total_cost": 15350.0,
+    "total_revenue": 1500.0,
+    "net_cost_per_kg": 0.56,
+    "cost_breakdown": {
+      "chick_cost": 4500.0,
+      "chick_cost_percent": 29.3,
+      "pre_starter_cost": 325.0,
+      "pre_starter_cost_percent": 2.1,
+      "starter_cost": 1125.0,
+      "starter_cost_percent": 7.3,
+      "growth_cost": 3200.0,
+      "growth_cost_percent": 20.8,
+      "final_cost": 4200.0,
+      "final_cost_percent": 27.4,
+      "medicine_cost": 800.0,
+      "medicine_cost_percent": 5.2,
+      "miscellaneous_cost": 500.0,
+      "miscellaneous_cost_percent": 3.3,
+      "cost_variations": 300.0,
+      "cost_variations_percent": 2.0,
+      "sawdust_bedding_cost": 400.0,
+      "sawdust_bedding_cost_percent": 2.6
+    }
+  },
+  "removal_batches": [
+    {
+      "quantity": 9500,
+      "total_weight_kg": 24800.0,
+      "age_days": 45
+    }
+  ]
+}
