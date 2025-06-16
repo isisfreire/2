@@ -130,6 +130,11 @@ function App() {
     try {
       // Convert string inputs to numbers
       const numericData = {
+        // Batch identification
+        batch_id: formData.batch_id.trim(),
+        shed_number: formData.shed_number.trim(),
+        handler_name: formData.handler_name.trim(),
+        
         initial_chicks: parseInt(formData.initial_chicks) || 0,
         chick_cost_per_unit: parseFloat(formData.chick_cost_per_unit) || 0,
         
@@ -153,6 +158,8 @@ function App() {
         medicine_costs: parseFloat(formData.medicine_costs) || 0,
         miscellaneous_costs: parseFloat(formData.miscellaneous_costs) || 0,
         cost_variations: parseFloat(formData.cost_variations) || 0,
+        sawdust_bedding_cost: parseFloat(formData.sawdust_bedding_cost) || 0,
+        chicken_bedding_sale_revenue: parseFloat(formData.chicken_bedding_sale_revenue) || 0,
         
         chicks_died: parseInt(formData.chicks_died) || 0,
         
@@ -164,6 +171,20 @@ function App() {
             age_days: parseInt(batch.age_days) || 0
           }))
       };
+
+      // Validate required fields
+      if (!numericData.batch_id) {
+        setError('Batch ID is required');
+        return;
+      }
+      if (!numericData.shed_number) {
+        setError('Shed number is required');
+        return;
+      }
+      if (!numericData.handler_name) {
+        setError('Handler name is required');
+        return;
+      }
 
       if (numericData.removal_batches.length === 0) {
         setError('At least one removal batch is required');
