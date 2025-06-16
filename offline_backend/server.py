@@ -584,11 +584,11 @@ def generate_pdf_report(calculation: BroilerCalculation) -> str:
     return filename
 
 # API Routes
-@app.get("/")
+@api_router.get("/")
 async def root():
     return {"message": "Offline Broiler Farm Management System API", "status": "running"}
 
-@app.post("/calculate", response_model=CalculationResult)
+@api_router.post("/calculate", response_model=CalculationResult)
 async def calculate_broiler_costs(input_data: BroilerCalculationInput):
     """Calculate enhanced broiler chicken production costs and metrics"""
     # Validate input
@@ -647,7 +647,7 @@ async def calculate_broiler_costs(input_data: BroilerCalculationInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Calculation error: {str(e)}")
 
-@app.get("/calculations", response_model=List[BatchSummary])
+@api_router.get("/calculations", response_model=List[BatchSummary])
 async def get_calculations():
     """Get all saved calculations summary"""
     calculations = await db.get_all_calculations()
@@ -671,12 +671,12 @@ async def get_calculations():
     
     return summaries
 
-@app.get("/handlers/names")
+@api_router.get("/handlers/names")
 async def get_handler_names():
     """Get all handler names for dropdown"""
     return await db.get_handler_names()
 
-@app.get("/handlers/performance")
+@api_router.get("/handlers/performance")
 async def get_handlers_performance():
     """Get performance analysis for all handlers"""
     handlers = await db.get_all_handlers()
@@ -692,7 +692,7 @@ async def get_handlers_performance():
     
     return performances
 
-@app.get("/handlers/{handler_name}/performance")
+@api_router.get("/handlers/{handler_name}/performance")
 async def get_handler_performance_endpoint(handler_name: str):
     """Get performance analysis for a specific handler"""
     performance = await calculate_handler_performance(handler_name)
@@ -701,13 +701,13 @@ async def get_handler_performance_endpoint(handler_name: str):
     
     return performance
 
-@app.get("/handlers")
+@api_router.get("/handlers")
 async def get_handlers():
     """Get all handlers"""
     handlers_data = await db.get_all_handlers()
     return [Handler(**handler) for handler in handlers_data]
 
-@app.post("/handlers", response_model=Handler)
+@api_router.post("/handlers", response_model=Handler)
 async def create_handler(handler_data: HandlerCreate):
     """Create a new handler"""
     # Check if handler name already exists
@@ -723,7 +723,7 @@ async def create_handler(handler_data: HandlerCreate):
     
     return Handler(**handler_dict)
 
-@app.get("/handlers/{handler_id}", response_model=Handler)
+@api_router.get("/handlers/{handler_id}", response_model=Handler)
 async def get_handler(handler_id: str):
     """Get a specific handler"""
     handler = await db.find_handler_by_id(handler_id)
@@ -731,7 +731,7 @@ async def get_handler(handler_id: str):
         raise HTTPException(status_code=404, detail="Handler not found")
     return Handler(**handler)
 
-@app.put("/handlers/{handler_id}", response_model=Handler)
+@api_router.put("/handlers/{handler_id}", response_model=Handler)
 async def update_handler(handler_id: str, handler_data: HandlerUpdate):
     """Update a handler"""
     # Check if handler exists
@@ -755,7 +755,7 @@ async def update_handler(handler_id: str, handler_data: HandlerUpdate):
     updated_handler = await db.find_handler_by_id(handler_id)
     return Handler(**updated_handler)
 
-@app.delete("/handlers/{handler_id}")
+@api_router.delete("/handlers/{handler_id}")
 async def delete_handler(handler_id: str):
     """Delete a handler"""
     # Check if handler has any batches
@@ -777,13 +777,13 @@ async def delete_handler(handler_id: str):
     return {"message": "Handler deleted successfully"}
 
 # Shed Management Endpoints
-@app.get("/admin/sheds", response_model=List[Shed])
+@api_router.get("/admin/sheds", response_model=List[Shed])
 async def get_all_sheds():
     """Get all sheds with full details"""
     sheds_data = await db.get_all_sheds()
     return [Shed(**shed) for shed in sheds_data]
 
-@app.post("/admin/sheds", response_model=Shed)
+@api_router.post("/admin/sheds", response_model=Shed)
 async def create_shed(shed_data: ShedCreate):
     """Create a new shed"""
     # Check if shed number already exists
@@ -799,7 +799,7 @@ async def create_shed(shed_data: ShedCreate):
     
     return Shed(**shed_dict)
 
-@app.get("/admin/sheds/{shed_id}", response_model=Shed)
+@api_router.get("/admin/sheds/{shed_id}", response_model=Shed)
 async def get_shed(shed_id: str):
     """Get a specific shed"""
     shed = await db.find_shed_by_id(shed_id)
@@ -807,7 +807,7 @@ async def get_shed(shed_id: str):
         raise HTTPException(status_code=404, detail="Shed not found")
     return Shed(**shed)
 
-@app.put("/admin/sheds/{shed_id}", response_model=Shed)
+@api_router.put("/admin/sheds/{shed_id}", response_model=Shed)
 async def update_shed(shed_id: str, shed_data: ShedUpdate):
     """Update a shed"""
     # Check if shed exists
@@ -831,7 +831,7 @@ async def update_shed(shed_id: str, shed_data: ShedUpdate):
     updated_shed = await db.find_shed_by_id(shed_id)
     return Shed(**updated_shed)
 
-@app.delete("/admin/sheds/{shed_id}")
+@api_router.delete("/admin/sheds/{shed_id}")
 async def delete_shed(shed_id: str):
     """Delete a shed"""
     # Check if shed has any batches (this would need a custom query in real implementation)
@@ -845,7 +845,7 @@ async def delete_shed(shed_id: str):
     
     return {"message": "Shed deleted successfully"}
 
-@app.put("/batches/{batch_id}")
+@api_router.put("/batches/{batch_id}")
 async def update_batch(batch_id: str, input_data: BroilerCalculationInput):
     """Update an existing batch calculation"""
     # Check if batch exists
@@ -907,7 +907,7 @@ async def update_batch(batch_id: str, input_data: BroilerCalculationInput):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Update error: {str(e)}")
 
-@app.get("/batches/{batch_id}")
+@api_router.get("/batches/{batch_id}")
 async def get_batch_details(batch_id: str):
     """Get detailed information for a specific batch"""
     calculation = await db.find_calculation_by_batch_id(batch_id)
@@ -916,7 +916,7 @@ async def get_batch_details(batch_id: str):
     
     return BroilerCalculation(**calculation)
 
-@app.get("/batches/{batch_id}/export-pdf")
+@api_router.get("/batches/{batch_id}/export-pdf")
 async def regenerate_batch_pdf(batch_id: str):
     """Regenerate PDF report for an existing batch"""
     calculation = await db.find_calculation_by_batch_id(batch_id)
@@ -931,7 +931,7 @@ async def regenerate_batch_pdf(batch_id: str):
     
     return {"message": "PDF regenerated successfully", "filename": pdf_filename}
 
-@app.get("/export/{filename}")
+@api_router.get("/export/{filename}")
 async def download_export(filename: str):
     """Download exported batch report (JSON or PDF)"""
     filepath = EXPORTS_DIR / filename
@@ -946,12 +946,12 @@ async def download_export(filename: str):
     
     return FileResponse(filepath, filename=filename, media_type=media_type)
 
-@app.get("/sheds")
+@api_router.get("/sheds")
 async def get_sheds():
     """Get all shed numbers"""
     return await db.get_shed_numbers()
 
-@app.delete("/batches/{batch_id}")
+@api_router.delete("/batches/{batch_id}")
 async def delete_batch_by_id(batch_id: str):
     """Delete a batch by batch ID"""
     deleted = await db.delete_calculation_by_batch_id(batch_id)
@@ -959,7 +959,7 @@ async def delete_batch_by_id(batch_id: str):
         raise HTTPException(status_code=404, detail="Batch not found")
     return {"message": "Batch deleted successfully"}
 
-@app.delete("/calculations/{calculation_id}")
+@api_router.delete("/calculations/{calculation_id}")
 async def delete_calculation(calculation_id: str):
     """Delete a specific calculation"""
     deleted = await db.delete_calculation_by_id(calculation_id)
