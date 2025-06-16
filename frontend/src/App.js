@@ -1334,32 +1334,42 @@ function App() {
               </div>
             </div>
 
-            {/* Business Insights */}
+            {/* Business Insights and Downloads */}
             <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Business Insights</h2>
-              <div className="space-y-3">
-                {result.insights.map((insight, index) => {
-                  // Check if this is a PDF export insight
-                  if (insight.includes('PDF report exported as:')) {
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Business Insights & Reports</h2>
+              
+              {/* Download Section */}
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                <h3 className="text-lg font-semibold text-green-800 mb-2">📄 Batch Reports Available</h3>
+                <div className="flex flex-wrap gap-2">
+                  {result.insights.filter(insight => insight.includes('exported as:')).map((insight, index) => {
                     const filename = insight.split('as: ')[1].trim();
+                    const isPDF = filename.endsWith('.pdf');
+                    
                     return (
-                      <div key={index} className="bg-green-50 p-3 rounded-lg text-sm flex justify-between items-center">
-                        <span>{insight}</span>
-                        <button
-                          onClick={() => downloadPDF(filename)}
-                          className="bg-green-600 text-white px-3 py-1 rounded text-xs hover:bg-green-700"
-                        >
-                          Download PDF
-                        </button>
-                      </div>
+                      <button
+                        key={index}
+                        onClick={() => window.open(`${API}/export/${filename}`, '_blank')}
+                        className={`flex items-center px-4 py-2 rounded-md text-sm font-medium ${
+                          isPDF 
+                            ? 'bg-red-600 text-white hover:bg-red-700' 
+                            : 'bg-blue-600 text-white hover:bg-blue-700'
+                        }`}
+                      >
+                        {isPDF ? '📄 Download PDF Report' : '📊 Download JSON Data'}
+                      </button>
                     );
-                  }
-                  return (
-                    <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
-                      {insight}
-                    </div>
-                  );
-                })}
+                  })}
+                </div>
+              </div>
+
+              {/* Business Insights */}
+              <div className="space-y-3">
+                {result.insights.filter(insight => !insight.includes('exported as:')).map((insight, index) => (
+                  <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
+                    {insight}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
