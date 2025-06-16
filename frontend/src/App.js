@@ -677,6 +677,7 @@ function App() {
                       </button>
                       <button
                         onClick={() => {
+                          console.log('Delete button clicked for handler:', handler.id);
                           if (window.confirm(`Delete handler "${handler.name}"? This action cannot be undone.`)) {
                             deleteHandler(handler.id);
                           }
