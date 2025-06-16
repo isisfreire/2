@@ -804,14 +804,42 @@ class EnhancedBroilerCalculatorAPITest(unittest.TestCase):
         
     def test_batch_details_endpoint(self):
         """Test the batch details endpoint"""
+        # Create a batch first to ensure we have something to retrieve
+        test_batch_id = f"BATCH-DETAILS-{uuid.uuid4().hex[:8]}"
+        
+        payload = {
+            "batch_id": test_batch_id,
+            "shed_number": "SHED-D1",
+            "handler_name": "Details Tester",
+            "initial_chicks": 5000,
+            "chick_cost_per_unit": 0.45,
+            "pre_starter_feed": {"consumption_kg": 250, "cost_per_kg": 0.65},
+            "starter_feed": {"consumption_kg": 1250, "cost_per_kg": 0.45},
+            "growth_feed": {"consumption_kg": 4000, "cost_per_kg": 0.40},
+            "final_feed": {"consumption_kg": 6000, "cost_per_kg": 0.35},
+            "medicine_costs": 400,
+            "miscellaneous_costs": 250,
+            "cost_variations": 150,
+            "sawdust_bedding_cost": 200,
+            "chicken_bedding_sale_revenue": 300,
+            "chicks_died": 125,
+            "removal_batches": [
+                {"quantity": 4875, "total_weight_kg": 12300, "age_days": 45}
+            ]
+        }
+        
+        # Submit the calculation
+        response = requests.post(f"{API_URL}/calculate", json=payload)
+        self.assertEqual(response.status_code, 200)
+        
         # Get details for our test batch
-        response = requests.get(f"{API_URL}/batches/{self.unique_batch_id}")
+        response = requests.get(f"{API_URL}/batches/{test_batch_id}")
         self.assertEqual(response.status_code, 200)
         
         batch = response.json()
-        self.assertEqual(batch["input_data"]["batch_id"], self.unique_batch_id)
-        self.assertEqual(batch["input_data"]["shed_number"], "SHED-A1")
-        self.assertEqual(batch["input_data"]["handler_name"], "John Smith")
+        self.assertEqual(batch["input_data"]["batch_id"], test_batch_id)
+        self.assertEqual(batch["input_data"]["shed_number"], "SHED-D1")
+        self.assertEqual(batch["input_data"]["handler_name"], "Details Tester")
         
         # Test with non-existent batch ID
         response = requests.get(f"{API_URL}/batches/non-existent-batch")
