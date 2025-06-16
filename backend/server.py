@@ -736,6 +736,43 @@ async def get_calculations():
 
 
 
+@api_router.get("/handlers/names")
+async def get_handler_names():
+    """
+    Get all handler names for dropdown
+    """
+    handlers = await db.handlers.find().sort("name", 1).to_list(100)
+    return [handler["name"] for handler in handlers]
+
+@api_router.get("/handlers/performance")
+async def get_handlers_performance():
+    """
+    Get performance analysis for all handlers
+    """
+    handlers = await db.handlers.find().to_list(100)
+    performances = []
+    
+    for handler in handlers:
+        performance = await calculate_handler_performance(handler["name"])
+        if performance:
+            performances.append(performance)
+    
+    # Sort by performance score (descending)
+    performances.sort(key=lambda x: x.performance_score, reverse=True)
+    
+    return performances
+
+@api_router.get("/handlers/{handler_name}/performance")
+async def get_handler_performance(handler_name: str):
+    """
+    Get performance analysis for a specific handler
+    """
+    performance = await calculate_handler_performance(handler_name)
+    if not performance:
+        raise HTTPException(status_code=404, detail="Handler not found or no batches recorded")
+    
+    return performance
+
 @api_router.get("/handlers")
 async def get_handlers():
     """
