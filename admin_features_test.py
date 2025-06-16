@@ -298,6 +298,8 @@ class AdminFeaturesTest(unittest.TestCase):
             "batch_id": f"BATCH-PERF-{uuid.uuid4().hex[:8]}",
             "shed_number": "SHED-P1",
             "handler_name": handler_name,
+            "entry_date": "2024-01-15T00:00:00Z",
+            "exit_date": "2024-03-01T00:00:00Z",
             "initial_chicks": 10000,
             "chick_cost_per_unit": 0.45,
             "pre_starter_feed": {"consumption_kg": 500, "cost_per_kg": 0.65},
