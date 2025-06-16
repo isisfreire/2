@@ -1021,6 +1021,9 @@ function App() {
         {/* Performance Tab */}
         {showPerformanceTab && <HandlerPerformanceTable />}
 
+        {/* Admin Tab */}
+        {showAdminTab && <AdminManagement />}
+
         {/* Full Results Display */}
         {result && (
           <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
