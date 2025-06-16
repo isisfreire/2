@@ -1053,7 +1053,10 @@ function App() {
                         🖨️ Print
                       </button>
                       <button
-                        onClick={() => deleteBatch(batch.batch_id)}
+                        onClick={() => {
+                          console.log('Delete button clicked for batch:', batch.batch_id);
+                          deleteBatch(batch.batch_id);
+                        }}
                         className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
                         title="Delete Batch"
                       >
