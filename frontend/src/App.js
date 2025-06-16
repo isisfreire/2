@@ -218,7 +218,17 @@ function App() {
         return;
       }
 
-      const response = await axios.post(`${API}/calculate`, numericData);
+      // Choose endpoint based on whether we're editing or creating
+      let response;
+      if (editingBatch) {
+        // Update existing batch
+        response = await axios.put(`${API}/batches/${numericData.batch_id}`, numericData);
+        setEditingBatch(false);
+      } else {
+        // Create new batch
+        response = await axios.post(`${API}/calculate`, numericData);
+      }
+      
       setResult(response.data);
       
       // Reload history and performance data
