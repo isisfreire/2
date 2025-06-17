@@ -1244,11 +1244,11 @@ function App() {
               {/* Basic Info Tab */}
               {activeTab === 'basic' && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-800">Batch & Production Data</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">{t.batchProductionData}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Batch ID *
+                        {t.batchIdLabel}
                       </label>
                       <input
                         type="text"
@@ -1256,14 +1256,14 @@ function App() {
                         value={formData.batch_id}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., BATCH-2024-001"
+                        placeholder={t.batchIdExample}
                         required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Shed Number *
+                        {t.shedNumberLabel}
                       </label>
                       <input
                         type="text"
@@ -1272,7 +1272,7 @@ function App() {
                         onChange={handleInputChange}
                         list="sheds-list"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., SHED-A1"
+                        placeholder={t.shedNumberExample}
                         required
                       />
                       <datalist id="sheds-list">
@@ -1282,7 +1282,7 @@ function App() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Handler Name *
+                        {t.handlerNameLabel}
                       </label>
                       <input
                         type="text"
@@ -1291,7 +1291,7 @@ function App() {
                         onChange={handleInputChange}
                         list="handlers-list"
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., John Smith"
+                        placeholder={t.handlerNameExample}
                         required
                       />
                       <datalist id="handlers-list">
@@ -1301,7 +1301,7 @@ function App() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Entry Date (Chicks Arrival) *
+                        {t.entryDateLabel}
                       </label>
                       <input
                         type="date"
@@ -1315,7 +1315,7 @@ function App() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Exit Date (Batch Closure) *
+                        {t.exitDateLabel}
                       </label>
                       <input
                         type="date"
@@ -1329,7 +1329,7 @@ function App() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Initial Number of Chicks *
+                        {t.initialChicksLabel}
                       </label>
                       <input
                         type="number"
@@ -1337,14 +1337,14 @@ function App() {
                         value={formData.initial_chicks}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 10000"
+                        placeholder={t.initialChicksExample}
                         required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Cost per Chick ($) *
+                        {t.costPerChickLabel}
                       </label>
                       <input
                         type="number"
@@ -1353,14 +1353,14 @@ function App() {
                         value={formData.chick_cost_per_unit}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 0.45"
+                        placeholder={t.costPerChickExample}
                         required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Number of Chicks Died *
+                        {t.chicksDiedLabel}
                       </label>
                       <input
                         type="number"
@@ -1368,7 +1368,7 @@ function App() {
                         value={formData.chicks_died}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 250"
+                        placeholder={t.chicksDiedExample}
                         required
                       />
                     </div>
