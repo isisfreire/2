@@ -1488,7 +1488,7 @@ function App() {
 
                   {/* Final Feed */}
                   <div className="bg-purple-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-purple-800 mb-3">Final Feed (35+ days)</h4>
+                    <h4 className="font-semibold text-purple-800 mb-3">{t.finalFeedTitle}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
