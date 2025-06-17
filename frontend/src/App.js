@@ -1383,7 +1383,7 @@ function App() {
                   
                   {/* Pre-starter Feed */}
                   <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-800 mb-3">Pre-starter Feed (0-10 days)</h4>
+                    <h4 className="font-semibold text-blue-800 mb-3">{t.preStarterFeedTitle}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
