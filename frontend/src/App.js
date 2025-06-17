@@ -1453,7 +1453,7 @@ function App() {
 
                   {/* Growth Feed */}
                   <div className="bg-yellow-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-yellow-800 mb-3">Growth Feed (24-35 days)</h4>
+                    <h4 className="font-semibold text-yellow-800 mb-3">{t.growthFeedTitle}</h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
