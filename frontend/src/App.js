@@ -1200,43 +1200,43 @@ function App() {
                 onClick={() => setActiveTab('basic')}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'basic' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
-                Basic Info
+                {t.basicInfo}
               </button>
               <button
                 onClick={() => setActiveTab('feed')}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'feed' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
-                Feed Phases
+                {t.feedPhases}
               </button>
               <button
                 onClick={() => setActiveTab('costs')}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'costs' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
-                Additional Costs
+                {t.additionalCosts}
               </button>
               <button
                 onClick={() => setActiveTab('removals')}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${activeTab === 'removals' ? 'border-b-2 border-green-500 text-green-600' : 'text-gray-500'}`}
               >
-                Removals
+                {t.removals}
               </button>
               <button
                 onClick={() => setShowPerformanceTab(!showPerformanceTab)}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${showPerformanceTab ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
               >
-                Performance
+                {t.performance}
               </button>
               <button
                 onClick={() => setShowAdminTab(!showAdminTab)}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${showAdminTab ? 'border-b-2 border-purple-500 text-purple-600' : 'text-gray-500'}`}
               >
-                Admin
+                {t.admin}
               </button>
               <button
                 onClick={() => setShowBatchManagementTab(!showBatchManagementTab)}
                 className={`px-4 py-2 font-medium whitespace-nowrap ${showBatchManagementTab ? 'border-b-2 border-orange-500 text-orange-600' : 'text-gray-500'}`}
               >
-                Batch Management
+                {t.batchManagement}
               </button>
             </div>
 
