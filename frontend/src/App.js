@@ -1171,17 +1171,17 @@ function App() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
-            🐔 Enhanced Broiler Chicken Cost Calculator
+            {t.enhancedBroilerCalculatorTitle}
           </h1>
           <p className="text-lg text-gray-600">
-            Professional poultry production cost analysis with detailed feed phases and removal tracking
+            {t.professionalPoultrySubtitle}
           </p>
           {/* Temporary API Test Button */}
           <button 
             onClick={testAPI}
             className="mt-4 bg-yellow-600 text-white px-4 py-2 rounded-md hover:bg-yellow-700"
           >
-            🔧 Test API Connection
+            {t.testApiConnection}
           </button>
         </div>
 
