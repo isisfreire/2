@@ -351,7 +351,10 @@ export const translations = {
   errorCreatingShed: "Erro ao criar galpão",
   errorUpdatingShed: "Erro ao atualizar galpão",
   errorDeletingShed: "Erro ao excluir galpão",
-  anErrorOccurredDuringCalculation: "Ocorreu um erro durante o cálculo"
+  anErrorOccurredDuringCalculation: "Ocorreu um erro durante o cálculo",
+  
+  // Additional translations
+  downloadPDF: "Baixar Relatório PDF"
 };
 
 export default translations;
