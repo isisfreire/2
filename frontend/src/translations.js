@@ -214,7 +214,144 @@ export const translations = {
   // Outros
   na: "N/A",
   optional: "opcional",
-  required: "obrigatório"
+  required: "obrigatório",
+  
+  // App header and main titles
+  enhancedBroilerCalculatorTitle: "🐔 Calculadora Avançada de Custos de Frango de Corte",
+  professionalPoultrySubtitle: "Análise profissional de custos de produção avícola com fases detalhadas de ração e rastreamento de retiradas",
+  testApiConnection: "🔧 Testar Conexão API",
+  
+  // Navigation tabs and buttons
+  basicInfo: "Informações Básicas",
+  feedPhases: "Fases da Ração",
+  additionalCosts: "Custos Adicionais",
+  removals: "Retiradas",
+  
+  // Farm administration text
+  farmAdministrationTitle: "Administração da Granja",
+  handlerManagementTitle: "👨‍🌾 Gestão de Tratadores",
+  addNewHandlerTitle: "Adicionar Novo Tratador",
+  handlerNameStar: "Nome do Tratador *",
+  emailOptional: "Email (opcional)",
+  phoneOptional: "Telefone (opcional)",
+  notesOptional: "Observações (opcional)",
+  
+  // Shed management
+  shedManagementTitle: "🏠 Gestão de Galpões",
+  addNewShedTitle: "Adicionar Novo Galpão",
+  shedNumberStar: "Número do Galpão *",
+  capacityOptional: "Capacidade (opcional)",
+  locationOptional: "Localização (opcional)",
+  
+  // Cost breakdown chart
+  costBreakdownTitle: "Divisão de Custos",
+  
+  // Handler performance
+  handlerPerformanceTitle: "Ranking de Desempenho dos Tratadores",
+  noPerformanceDataText: "Nenhum dado de desempenho disponível. Complete alguns lotes para ver o ranking dos tratadores.",
+  
+  // Table headers
+  rankHeader: "Posição",
+  handlerHeader: "Tratador",
+  batchesHeader: "Lotes",
+  avgFcrHeader: "TCA Média",
+  avgMortalityHeader: "Mortalidade Média %",
+  avgDailyGainHeader: "Ganho Diário Médio",
+  scoreHeader: "Pontuação",
+  nameHeader: "Nome",
+  emailHeader: "Email",
+  phoneHeader: "Telefone",
+  actionsHeader: "Ações",
+  numberHeader: "Número",
+  capacityHeader: "Capacidade",
+  locationHeader: "Localização",
+  statusHeader: "Status",
+  
+  // Batch management
+  batchManagementHeader: "📋 Gestão de Lotes",
+  searchBatches: "Buscar Lotes",
+  searchPlaceholder: "Buscar por ID do lote, tratador ou galpão...",
+  filterByHandler: "Filtrar por Tratador",
+  allHandlers: "Todos os Tratadores",
+  filterByShed: "Filtrar por Galpão",
+  allSheds: "Todos os Galpões",
+  batchIdHeader: "ID do Lote",
+  dateHeader: "Data",
+  shedHeader: "Galpão",
+  chicksHeader: "Pintinhos",
+  fcrHeader: "TCA",
+  mortalityPercentHeader: "Mortalidade %",
+  costKgHeader: "Custo/kg",
+  
+  // Action buttons
+  editButton: "📝 Editar",
+  printButton: "🖨️ Imprimir",
+  deleteButton: "🗑️ Excluir",
+  loadButton: "Carregar",
+  updateHandler: "Atualizar Tratador",
+  updateShed: "Atualizar Galpão",
+  cancel: "Cancelar",
+  
+  // Alert and confirmation messages
+  deleteHandlerConfirm: "Tem certeza que deseja excluir este tratador?",
+  deleteShedConfirm: "Excluir galpão \"{shedNumber}\"? Esta ação não pode ser desfeita.",
+  deleteBatchConfirm: "Tem certeza que deseja excluir este lote? Esta ação não pode ser desfeita.",
+  handlerDeletedSuccess: "Tratador excluído com sucesso",
+  shedDeletedSuccess: "Galpão excluído com sucesso",
+  batchDeletedSuccess: "Lote excluído com sucesso",
+  deleteFailed: "Falha na exclusão: {error}",
+  pdfRegeneratedSuccess: "PDF regenerado com sucesso: {filename}",
+  errorRegeneratingPdf: "Erro ao regenerar PDF",
+  apiTestSuccess: "Teste de conectividade da API bem-sucedido! Verifique o console para detalhes.",
+  apiTestFailed: "Teste da API falhou: {error}",
+  
+  // Form sections
+  batchProductionData: "Dados do Lote e Produção",
+  feedPhasesTitle: "Fases da Ração",
+  preStarterFeedTitle: "Ração Pré-Inicial (0-10 dias)",
+  starterFeedTitle: "Ração Inicial (10-24 dias)", 
+  growthFeedTitle: "Ração de Crescimento (24-35 dias)",
+  finalFeedTitle: "Ração Final (35+ dias)",
+  
+  // Form labels
+  batchIdLabel: "ID do Lote *",
+  shedNumberLabel: "Número do Galpão *",
+  handlerNameLabel: "Nome do Tratador *",
+  entryDateLabel: "Data de Entrada (Chegada dos Pintinhos) *",
+  exitDateLabel: "Data de Saída (Fechamento do Lote) *",
+  initialChicksLabel: "Número Inicial de Pintinhos *",
+  costPerChickLabel: "Custo por Pintinho ($) *",
+  chicksDiedLabel: "Número de Pintinhos Mortos *",
+  consumptionLabel: "Consumo (kg)",
+  costPerKgLabel: "Custo por kg ($)",
+  
+  // Placeholders
+  batchIdExample: "ex: LOTE-2024-001",
+  shedNumberExample: "ex: GALPAO-A1",
+  handlerNameExample: "ex: João Silva",
+  initialChicksExample: "ex: 10000",
+  costPerChickExample: "ex: 0,45",
+  chicksDiedExample: "ex: 250",
+  consumptionExample: "ex: 500",
+  costPerKgExample: "ex: 0,65",
+  
+  // Search and filter
+  noBatchesFound: "Nenhum lote encontrado.",
+  createFirstBatch: "Crie seu primeiro lote para começar.",
+  noBatchesMatchCriteria: "Nenhum lote corresponde aos seus critérios de busca.",
+  
+  // Editing mode
+  editingModeText: "📝 Modo de Edição: Os dados do lote foram carregados no formulário. Faça suas alterações e clique em \"Calcular Métricas Avançadas\" para atualizar o lote.",
+  
+  // Error handling
+  errorLoadingBatchDetails: "Erro ao carregar detalhes do lote: {error}",
+  errorCreatingHandler: "Erro ao criar tratador",
+  errorUpdatingHandler: "Erro ao atualizar tratador",
+  errorDeletingHandler: "Erro ao excluir tratador",
+  errorCreatingShed: "Erro ao criar galpão",
+  errorUpdatingShed: "Erro ao atualizar galpão",
+  errorDeletingShed: "Erro ao excluir galpão",
+  anErrorOccurredDuringCalculation: "Ocorreu um erro durante o cálculo"
 };
 
 export default translations;
