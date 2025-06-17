@@ -1466,7 +1466,7 @@ function App() {
                           value={formData.growth_consumption}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                          placeholder="e.g., 8000"
+                          placeholder="ex: 8000"
                         />
                       </div>
                       <div>
