@@ -1379,7 +1379,7 @@ function App() {
               {/* Feed Phases Tab */}
               {activeTab === 'feed' && (
                 <div className="space-y-6">
-                  <h3 className="text-xl font-semibold text-gray-800">Feed Phases</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">{t.feedPhasesTitle}</h3>
                   
                   {/* Pre-starter Feed */}
                   <div className="bg-blue-50 p-4 rounded-lg">
