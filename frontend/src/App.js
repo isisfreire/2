@@ -275,7 +275,7 @@ function App() {
       loadAllSheds();
       
     } catch (err) {
-      setError(err.response?.data?.detail || 'An error occurred during calculation');
+      setError(err.response?.data?.detail || t.anErrorOccurredDuringCalculation);
     } finally {
       setLoading(false);
     }
@@ -319,7 +319,7 @@ function App() {
       loadAllHandlers();
       loadHandlers();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error creating handler');
+      alert(err.response?.data?.detail || t.errorCreatingHandler);
     }
   };
 
@@ -329,7 +329,7 @@ function App() {
       loadAllHandlers();
       loadHandlers();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error updating handler');
+      alert(err.response?.data?.detail || t.errorUpdatingHandler);
     }
   };
 
@@ -338,20 +338,20 @@ function App() {
     console.log('API URL being used:', API);
     console.log('Full delete URL:', `${API}/handlers/${handlerId}`);
     
-    if (!window.confirm('Are you sure you want to delete this handler?')) return;
+    if (!window.confirm(t.deleteHandlerConfirm)) return;
     
     try {
       console.log('Making delete request...');
       const response = await axios.delete(`${API}/handlers/${handlerId}`);
       console.log('Delete response:', response);
-      alert('Handler deleted successfully');
+      alert(t.handlerDeletedSuccess);
       await loadAllHandlers();
       await loadHandlers();
     } catch (err) {
       console.error('Delete error details:', err);
       console.error('Error response:', err.response);
-      const errorMsg = err.response?.data?.detail || err.message || 'Error deleting handler';
-      alert(`Delete failed: ${errorMsg}`);
+      const errorMsg = err.response?.data?.detail || err.message || t.errorDeletingHandler;
+      alert(t.deleteFailed.replace('{error}', errorMsg));
     }
   };
 
@@ -361,7 +361,7 @@ function App() {
       loadAllSheds();
       loadSheds();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error creating shed');
+      alert(err.response?.data?.detail || t.errorCreatingShed);
     }
   };
 
@@ -371,7 +371,7 @@ function App() {
       loadAllSheds();
       loadSheds();
     } catch (err) {
-      alert(err.response?.data?.detail || 'Error updating shed');
+      alert(err.response?.data?.detail || t.errorUpdatingShed);
     }
   };
 
@@ -380,20 +380,20 @@ function App() {
     console.log('API URL being used:', API);
     console.log('Full delete URL:', `${API}/admin/sheds/${shedId}`);
     
-    if (!window.confirm('Are you sure you want to delete this shed?')) return;
+    if (!window.confirm(t.deleteShedConfirm)) return;
     
     try {
       console.log('Making delete request...');
       const response = await axios.delete(`${API}/admin/sheds/${shedId}`);
       console.log('Delete response:', response);
-      alert('Shed deleted successfully');
+      alert(t.shedDeletedSuccess);
       await loadAllSheds();
       await loadSheds();
     } catch (err) {
       console.error('Delete error details:', err);
       console.error('Error response:', err.response);
-      const errorMsg = err.response?.data?.detail || err.message || 'Error deleting shed';
-      alert(`Delete failed: ${errorMsg}`);
+      const errorMsg = err.response?.data?.detail || err.message || t.errorDeletingShed;
+      alert(t.deleteFailed.replace('{error}', errorMsg));
     }
   };
 
@@ -451,7 +451,7 @@ function App() {
       setActiveTab('basic');
       setShowBatchManagementTab(false);
     } catch (err) {
-      alert('Error loading batch details: ' + (err.response?.data?.detail || err.message));
+      alert(t.errorLoadingBatchDetails.replace('{error}', err.response?.data?.detail || err.message));
     }
   };
 
@@ -459,12 +459,12 @@ function App() {
     try {
       const response = await axios.get(`${API}/batches/${batchId}/export-pdf`);
       const filename = response.data.filename;
-      alert(`PDF regenerated successfully: ${filename}`);
+      alert(t.pdfRegeneratedSuccess.replace('{filename}', filename));
       
       // Download the PDF immediately
       downloadPDF(filename);
     } catch (err) {
-      const errorMsg = err.response?.data?.detail || 'Error regenerating PDF';
+      const errorMsg = err.response?.data?.detail || t.errorRegeneratingPdf;
       alert(errorMsg);
     }
   };
@@ -474,19 +474,19 @@ function App() {
     console.log('API URL being used:', API);
     console.log('Full delete URL:', `${API}/batches/${batchId}`);
     
-    if (!window.confirm('Are you sure you want to delete this batch? This action cannot be undone.')) return;
+    if (!window.confirm(t.deleteBatchConfirm)) return;
     
     try {
       console.log('Making delete request...');
       const response = await axios.delete(`${API}/batches/${batchId}`);
       console.log('Delete response:', response);
-      alert('Batch deleted successfully');
+      alert(t.batchDeletedSuccess);
       await loadHistory();
     } catch (err) {
       console.error('Delete error details:', err);
       console.error('Error response:', err.response);
       const errorMsg = err.response?.data?.detail || err.message || 'Error deleting batch';
-      alert(`Delete failed: ${errorMsg}`);
+      alert(t.deleteFailed.replace('{error}', errorMsg));
     }
   };
 
@@ -504,10 +504,10 @@ function App() {
       const handlersResponse = await axios.get(`${API}/handlers`);
       console.log('Handlers GET successful, count:', handlersResponse.data.length);
       
-      alert('API connectivity test successful! Check console for details.');
+      alert(t.apiTestSuccess);
     } catch (err) {
       console.error('API connectivity test failed:', err);
-      alert(`API test failed: ${err.message}`);
+      alert(t.apiTestFailed.replace('{error}', err.message));
     }
   };
 
@@ -521,19 +521,19 @@ function App() {
   // Chart component for cost breakdown
   const CostBreakdownChart = ({ costBreakdown }) => {
     const data = [
-      { name: 'Chicks', value: costBreakdown.chick_cost_percent, color: '#3B82F6' },
-      { name: 'Pre-starter Feed', value: costBreakdown.pre_starter_cost_percent, color: '#10B981' },
-      { name: 'Starter Feed', value: costBreakdown.starter_cost_percent, color: '#F59E0B' },
-      { name: 'Growth Feed', value: costBreakdown.growth_cost_percent, color: '#EF4444' },
-      { name: 'Final Feed', value: costBreakdown.final_cost_percent, color: '#8B5CF6' },
-      { name: 'Medicine', value: costBreakdown.medicine_cost_percent, color: '#06B6D4' },
-      { name: 'Miscellaneous', value: costBreakdown.miscellaneous_cost_percent, color: '#84CC16' },
-      { name: 'Cost Variations', value: costBreakdown.cost_variations_percent, color: '#F97316' }
+      { name: t.chicks, value: costBreakdown.chick_cost_percent, color: '#3B82F6' },
+      { name: t.preStarterFeedLabel, value: costBreakdown.pre_starter_cost_percent, color: '#10B981' },
+      { name: t.starterFeedLabel, value: costBreakdown.starter_cost_percent, color: '#F59E0B' },
+      { name: t.growthFeedLabel, value: costBreakdown.growth_cost_percent, color: '#EF4444' },
+      { name: t.finalFeedLabel, value: costBreakdown.final_cost_percent, color: '#8B5CF6' },
+      { name: t.medicine, value: costBreakdown.medicine_cost_percent, color: '#06B6D4' },
+      { name: t.miscellaneous, value: costBreakdown.miscellaneous_cost_percent, color: '#84CC16' },
+      { name: t.costVariationsLabel, value: costBreakdown.cost_variations_percent, color: '#F97316' }
     ].filter(item => item.value > 0);
 
     return (
       <div className="bg-white p-4 rounded-lg">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Cost Breakdown</h3>
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">{t.costBreakdownTitle}</h3>
         <div className="space-y-2">
           {data.map((item, index) => (
             <div key={index} className="flex items-center justify-between">
@@ -575,9 +575,9 @@ function App() {
     if (handlerPerformance.length === 0) {
       return (
         <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">Handler Performance Ranking</h2>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.handlerPerformanceTitle}</h2>
           <div className="text-center py-8 text-gray-500">
-            No performance data available. Complete some batches to see handler rankings.
+            {t.noPerformanceDataText}
           </div>
         </div>
       );
@@ -585,18 +585,18 @@ function App() {
 
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Handler Performance Ranking</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.handlerPerformanceTitle}</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full table-auto">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Rank</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batches</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg FCR</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Mortality %</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Daily Gain</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Score</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.rankHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.handlerHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.batchesHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.avgFcrHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.avgMortalityHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.avgDailyGainHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.scoreHeader}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -678,19 +678,19 @@ function App() {
 
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">Farm Administration</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t.farmAdministrationTitle}</h2>
         
         {/* Handler Management */}
         <div className="mb-8">
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">👨‍🌾 Handler Management</h3>
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">{t.handlerManagementTitle}</h3>
           
           {/* Add New Handler Form */}
           <form onSubmit={handleCreateHandler} className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold mb-3">Add New Handler</h4>
+            <h4 className="font-semibold mb-3">{t.addNewHandlerTitle}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Handler Name *"
+                placeholder={t.handlerNameStar}
                 value={newHandler.name}
                 onChange={(e) => setNewHandler({...newHandler, name: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -698,21 +698,21 @@ function App() {
               />
               <input
                 type="email"
-                placeholder="Email (optional)"
+                placeholder={t.emailOptional}
                 value={newHandler.email}
                 onChange={(e) => setNewHandler({...newHandler, email: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <input
                 type="tel"
-                placeholder="Phone (optional)"
+                placeholder={t.phoneOptional}
                 value={newHandler.phone}
                 onChange={(e) => setNewHandler({...newHandler, phone: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <input
                 type="text"
-                placeholder="Notes (optional)"
+                placeholder={t.notesOptional}
                 value={newHandler.notes}
                 onChange={(e) => setNewHandler({...newHandler, notes: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -722,7 +722,7 @@ function App() {
               type="submit"
               className="mt-3 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
             >
-              Add Handler
+              {t.addHandler}
             </button>
           </form>
 
@@ -731,10 +731,10 @@ function App() {
             <table className="min-w-full table-auto">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.nameHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.emailHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.phoneHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.actionsHeader}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -748,18 +748,18 @@ function App() {
                         onClick={() => setEditingHandler(handler)}
                         className="text-blue-600 hover:text-blue-800 mr-3"
                       >
-                        Edit
+                        {t.edit}
                       </button>
                       <button
                         onClick={() => {
                           console.log('Delete button clicked for handler:', handler.id);
-                          if (window.confirm(`Delete handler "${handler.name}"? This action cannot be undone.`)) {
+                          if (window.confirm(t.deleteHandlerConfirm)) {
                             deleteHandler(handler.id);
                           }
                         }}
                         className="text-red-600 hover:text-red-800"
                       >
-                        Delete
+                        {t.delete}
                       </button>
                     </td>
                   </tr>
@@ -772,7 +772,7 @@ function App() {
           {editingHandler && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                <h4 className="text-lg font-semibold mb-4">Edit Handler: {editingHandler.name}</h4>
+                <h4 className="text-lg font-semibold mb-4">{t.edit} {t.handlerHeader}: {editingHandler.name}</h4>
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
@@ -787,7 +787,7 @@ function App() {
                     <input
                       name="name"
                       type="text"
-                      placeholder="Handler Name *"
+                      placeholder={t.handlerNameStar}
                       defaultValue={editingHandler.name}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                       required
@@ -795,21 +795,21 @@ function App() {
                     <input
                       name="email"
                       type="email"
-                      placeholder="Email (optional)"
+                      placeholder={t.emailOptional}
                       defaultValue={editingHandler.email || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                     <input
                       name="phone"
                       type="tel"
-                      placeholder="Phone (optional)"
+                      placeholder={t.phoneOptional}
                       defaultValue={editingHandler.phone || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                     <input
                       name="notes"
                       type="text"
-                      placeholder="Notes (optional)"
+                      placeholder={t.notesOptional}
                       defaultValue={editingHandler.notes || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
@@ -819,14 +819,14 @@ function App() {
                       type="submit"
                       className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
                     >
-                      Update Handler
+                      {t.updateHandler}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingHandler(null)}
                       className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
                     >
-                      Cancel
+                      {t.cancel}
                     </button>
                   </div>
                 </form>
@@ -836,16 +836,16 @@ function App() {
         </div>
 
         {/* Shed Management */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-4">🏠 Shed Management</h3>
+        <div className="mb-8">
+          <h3 className="text-xl font-semibold text-gray-700 mb-4">{t.shedManagementTitle}</h3>
           
           {/* Add New Shed Form */}
           <form onSubmit={handleCreateShed} className="bg-gray-50 p-4 rounded-lg mb-4">
-            <h4 className="font-semibold mb-3">Add New Shed</h4>
+            <h4 className="font-semibold mb-3">{t.addNewShedTitle}</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input
                 type="text"
-                placeholder="Shed Number *"
+                placeholder={t.shedNumberStar}
                 value={newShed.number}
                 onChange={(e) => setNewShed({...newShed, number: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -853,14 +853,14 @@ function App() {
               />
               <input
                 type="number"
-                placeholder="Capacity (optional)"
+                placeholder={t.capacityOptional}
                 value={newShed.capacity}
                 onChange={(e) => setNewShed({...newShed, capacity: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               />
               <input
                 type="text"
-                placeholder="Location (optional)"
+                placeholder={t.locationOptional}
                 value={newShed.location}
                 onChange={(e) => setNewShed({...newShed, location: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -870,23 +870,16 @@ function App() {
                 onChange={(e) => setNewShed({...newShed, status: e.target.value})}
                 className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
-                <option value="active">Active</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="inactive">Inactive</option>
+                <option value="active">{t.active}</option>
+                <option value="maintenance">{t.maintenance}</option>
+                <option value="inactive">{t.inactive}</option>
               </select>
             </div>
-            <input
-              type="text"
-              placeholder="Notes (optional)"
-              value={newShed.notes}
-              onChange={(e) => setNewShed({...newShed, notes: e.target.value})}
-              className="w-full mt-4 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-            />
             <button
               type="submit"
               className="mt-3 bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700"
             >
-              Add Shed
+              {t.addShed}
             </button>
           </form>
 
@@ -895,11 +888,11 @@ function App() {
             <table className="min-w-full table-auto">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Number</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Capacity</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Location</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.numberHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.capacityHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.locationHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.statusHeader}</th>
+                  <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.actionsHeader}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -914,7 +907,8 @@ function App() {
                         shed.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {shed.status}
+                        {shed.status === 'active' ? t.active : 
+                         shed.status === 'maintenance' ? t.maintenance : t.inactive}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-sm">
@@ -922,18 +916,18 @@ function App() {
                         onClick={() => setEditingShed(shed)}
                         className="text-blue-600 hover:text-blue-800 mr-3"
                       >
-                        Edit
+                        {t.edit}
                       </button>
                       <button
                         onClick={() => {
                           console.log('Delete button clicked for shed:', shed.id);
-                          if (window.confirm(`Delete shed "${shed.number}"? This action cannot be undone.`)) {
+                          if (window.confirm(t.deleteShedConfirm.replace('{shedNumber}', shed.number))) {
                             deleteShed(shed.id);
                           }
                         }}
                         className="text-red-600 hover:text-red-800"
                       >
-                        Delete
+                        {t.delete}
                       </button>
                     </td>
                   </tr>
@@ -946,7 +940,7 @@ function App() {
           {editingShed && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4">
-                <h4 className="text-lg font-semibold mb-4">Edit Shed: {editingShed.number}</h4>
+                <h4 className="text-lg font-semibold mb-4">{t.edit} {t.shedHeader}: {editingShed.number}</h4>
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   const formData = new FormData(e.target);
@@ -962,7 +956,7 @@ function App() {
                     <input
                       name="number"
                       type="text"
-                      placeholder="Shed Number *"
+                      placeholder={t.shedNumberStar}
                       defaultValue={editingShed.number}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                       required
@@ -970,14 +964,14 @@ function App() {
                     <input
                       name="capacity"
                       type="number"
-                      placeholder="Capacity (optional)"
+                      placeholder={t.capacityOptional}
                       defaultValue={editingShed.capacity || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
                     <input
                       name="location"
                       type="text"
-                      placeholder="Location (optional)"
+                      placeholder={t.locationOptional}
                       defaultValue={editingShed.location || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
@@ -986,14 +980,14 @@ function App() {
                       defaultValue={editingShed.status}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     >
-                      <option value="active">Active</option>
-                      <option value="maintenance">Maintenance</option>
-                      <option value="inactive">Inactive</option>
+                      <option value="active">{t.active}</option>
+                      <option value="maintenance">{t.maintenance}</option>
+                      <option value="inactive">{t.inactive}</option>
                     </select>
                     <input
                       name="notes"
                       type="text"
-                      placeholder="Notes (optional)"
+                      placeholder={t.notesOptional}
                       defaultValue={editingShed.notes || ''}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     />
@@ -1003,14 +997,14 @@ function App() {
                       type="submit"
                       className="flex-1 bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700"
                     >
-                      Update Shed
+                      {t.updateShed}
                     </button>
                     <button
                       type="button"
                       onClick={() => setEditingShed(null)}
                       className="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
                     >
-                      Cancel
+                      {t.cancel}
                     </button>
                   </div>
                 </form>
@@ -1040,41 +1034,41 @@ function App() {
 
     return (
       <div className="bg-white rounded-xl shadow-lg p-6 mt-8">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6">📋 Batch Management</h2>
+        <h2 className="text-2xl font-semibold text-gray-800 mb-6">{t.batchManagementHeader}</h2>
         
         {/* Search and Filter Controls */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Search Batches</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.searchBatches}</label>
             <input
               type="text"
-              placeholder="Search by batch ID, handler, or shed..."
+              placeholder={t.searchPlaceholder}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Handler</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.filterByHandler}</label>
             <select
               value={filterHandler}
               onChange={(e) => setFilterHandler(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
-              <option value="">All Handlers</option>
+              <option value="">{t.allHandlers}</option>
               {handlers.map(handler => (
                 <option key={handler} value={handler}>{handler}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Filter by Shed</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t.filterByShed}</label>
             <select
               value={filterShed}
               onChange={(e) => setFilterShed(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
-              <option value="">All Sheds</option>
+              <option value="">{t.allSheds}</option>
               {sheds.map(shed => (
                 <option key={shed} value={shed}>{shed}</option>
               ))}
@@ -1087,15 +1081,15 @@ function App() {
           <table className="min-w-full table-auto">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batch ID</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shed</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Chicks</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FCR</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mortality %</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cost/kg</th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.batchIdHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.dateHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.shedHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.handlerHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.chicksHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.fcrHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.mortalityPercentHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.costKgHeader}</th>
+                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.actionsHeader}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -1116,16 +1110,16 @@ function App() {
                       <button
                         onClick={() => loadBatchDetails(batch.batch_id)}
                         className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700"
-                        title="View/Edit Batch"
+                        title={t.editButton}
                       >
-                        📝 Edit
+                        {t.editButton}
                       </button>
                       <button
                         onClick={() => regeneratePDF(batch.batch_id)}
                         className="bg-green-600 text-white px-2 py-1 rounded text-xs hover:bg-green-700"
-                        title="Generate & Download PDF"
+                        title={t.printButton}
                       >
-                        🖨️ Print
+                        {t.printButton}
                       </button>
                       <button
                         onClick={() => {
@@ -1133,9 +1127,9 @@ function App() {
                           deleteBatch(batch.batch_id);
                         }}
                         className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700"
-                        title="Delete Batch"
+                        title={t.deleteButton}
                       >
-                        🗑️ Delete
+                        {t.deleteButton}
                       </button>
                     </div>
                   </td>
@@ -1147,8 +1141,8 @@ function App() {
           {filteredHistory.length === 0 && (
             <div className="text-center py-8 text-gray-500">
               {searchTerm || filterHandler || filterShed 
-                ? 'No batches match your search criteria.' 
-                : 'No batches found. Create your first batch to get started.'}
+                ? t.noBatchesMatchCriteria
+                : t.noBatchesFound + ' ' + t.createFirstBatch}
             </div>
           )}
         </div>
@@ -1156,8 +1150,7 @@ function App() {
         {editingBatch && (
           <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-blue-800">
-              📝 <strong>Editing Mode:</strong> Batch data has been loaded into the form. 
-              Make your changes and click "Calculate Enhanced Metrics" to update the batch.
+              {t.editingModeText}
             </p>
           </div>
         )}
@@ -1387,7 +1380,7 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Consumption (kg)
+                          {t.consumptionLabel}
                         </label>
                         <input
                           type="number"
@@ -1401,7 +1394,7 @@ function App() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Cost per kg ($)
+                          {t.costPerKgLabel}
                         </label>
                         <input
                           type="number"
@@ -1422,7 +1415,7 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Consumption (kg)
+                          {t.consumptionLabel}
                         </label>
                         <input
                           type="number"
@@ -1436,7 +1429,7 @@ function App() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Cost per kg ($)
+                          {t.costPerKgLabel}
                         </label>
                         <input
                           type="number"
@@ -1457,7 +1450,7 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Consumption (kg)
+                          {t.consumptionLabel}
                         </label>
                         <input
                           type="number"
@@ -1471,7 +1464,7 @@ function App() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Cost per kg ($)
+                          {t.costPerKgLabel}
                         </label>
                         <input
                           type="number"
@@ -1492,7 +1485,7 @@ function App() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Consumption (kg)
+                          {t.consumptionLabel}
                         </label>
                         <input
                           type="number"
@@ -1506,7 +1499,7 @@ function App() {
                       </div>
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Cost per kg ($)
+                          {t.costPerKgLabel}
                         </label>
                         <input
                           type="number"
@@ -1526,11 +1519,11 @@ function App() {
               {/* Additional Costs Tab */}
               {activeTab === 'costs' && (
                 <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-800">Additional Costs & Revenue</h3>
+                  <h3 className="text-xl font-semibold text-gray-800">{t.additionalCosts}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Medicine & Vaccine Costs ($)
+                        {t.medicineCosts}
                       </label>
                       <input
                         type="number"
@@ -1539,13 +1532,13 @@ function App() {
                         value={formData.medicine_costs}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 800"
+                        placeholder={t.medicineCostsPlaceholder}
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Miscellaneous Costs ($)
+                        {t.miscellaneousCosts}
                       </label>
                       <input
                         type="number"
@@ -1554,43 +1547,14 @@ function App() {
                         value={formData.miscellaneous_costs}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 500"
+                        placeholder={t.miscellaneousCostsPlaceholder}
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Sawdust Bedding Cost ($)
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        name="sawdust_bedding_cost"
-                        value={formData.sawdust_bedding_cost}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 400"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Chicken Bedding Sale Revenue ($)
-                      </label>
-                      <input
-                        type="number"
-                        step="0.01"
-                        name="chicken_bedding_sale_revenue"
-                        value={formData.chicken_bedding_sale_revenue}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 600"
-                      />
-                    </div>
-
-                    <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Cost Variations ($)
+                        {t.costVariations}
+                        <span className="text-xs text-gray-500 ml-1">({t.costVariationsHelp})</span>
                       </label>
                       <input
                         type="number"
@@ -1599,9 +1563,38 @@ function App() {
                         value={formData.cost_variations}
                         onChange={handleInputChange}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="e.g., 300"
+                        placeholder={t.costVariationsPlaceholder}
                       />
-                      <p className="text-xs text-gray-500 mt-1">Additional cost adjustments or variations</p>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t.sawdustBeddingCost}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="sawdust_bedding_cost"
+                        value={formData.sawdust_bedding_cost}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder={t.sawdustBeddingCostPlaceholder}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {t.chickenBeddingSale}
+                      </label>
+                      <input
+                        type="number"
+                        step="0.01"
+                        name="chicken_bedding_sale_revenue"
+                        value={formData.chicken_bedding_sale_revenue}
+                        onChange={handleInputChange}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                        placeholder={t.chickenBeddingSalePlaceholder}
+                      />
                     </div>
                   </div>
                 </div>
@@ -1611,48 +1604,51 @@ function App() {
               {activeTab === 'removals' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <h3 className="text-xl font-semibold text-gray-800">Removal Batches</h3>
+                    <h3 className="text-xl font-semibold text-gray-800">{t.removalBatches}</h3>
                     <button
                       type="button"
                       onClick={addRemovalBatch}
+                      className="bg-green-600 text-white px-3 py-1 rounded-md hover:bg-green-700 text-sm"
                       disabled={removalBatches.length >= 15}
-                      className="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 disabled:opacity-50"
                     >
-                      Add Batch ({removalBatches.length}/15)
+                      {t.addBatch}
                     </button>
                   </div>
-
-                  <div className="space-y-4 max-h-96 overflow-y-auto">
+                  
+                  <div className="space-y-3">
                     {removalBatches.map((batch, index) => (
                       <div key={index} className="bg-gray-50 p-4 rounded-lg">
                         <div className="flex justify-between items-center mb-3">
-                          <h4 className="font-medium text-gray-700">Batch {index + 1}</h4>
+                          <h4 className="font-medium text-gray-700">{t.batchNumber} {index + 1}</h4>
                           {removalBatches.length > 1 && (
                             <button
                               type="button"
                               onClick={() => removeRemovalBatch(index)}
                               className="text-red-600 hover:text-red-800 text-sm"
                             >
-                              Remove
+                              {t.removeBatch}
                             </button>
                           )}
                         </div>
+                        
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Quantity Removed
+                              {t.quantityRemoved} *
                             </label>
                             <input
                               type="number"
                               value={batch.quantity}
                               onChange={(e) => handleRemovalBatchChange(index, 'quantity', e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                              placeholder="e.g., 2000"
+                              placeholder={t.quantityRemovedPlaceholder}
+                              required
                             />
                           </div>
+                          
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Total Weight (kg)
+                              {t.totalWeight} *
                             </label>
                             <input
                               type="number"
@@ -1660,19 +1656,24 @@ function App() {
                               value={batch.total_weight_kg}
                               onChange={(e) => handleRemovalBatchChange(index, 'total_weight_kg', e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                              placeholder="e.g., 4800"
+                              placeholder={t.totalWeightPlaceholder}
+                              required
                             />
                           </div>
+                          
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                              Age (days)
+                              {t.ageDays} * (35-60)
                             </label>
                             <input
                               type="number"
                               value={batch.age_days}
                               onChange={(e) => handleRemovalBatchChange(index, 'age_days', e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                              placeholder="e.g., 42"
+                              placeholder={t.ageDaysPlaceholder}
+                              min="35"
+                              max="60"
+                              required
                             />
                           </div>
                         </div>
@@ -1682,306 +1683,219 @@ function App() {
                 </div>
               )}
 
-              <div className="flex space-x-4 pt-6 border-t">
+              {/* Submit Button */}
+              <div className="flex space-x-4">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 font-medium"
+                  className="flex-1 bg-green-600 text-white py-3 px-6 rounded-md hover:bg-green-700 disabled:opacity-50 font-medium"
                 >
-                  {loading ? 'Processing...' : editingBatch ? '🔄 Update Batch' : '📊 Calculate Enhanced Metrics'}
+                  {loading ? t.loadingCalculation : t.calculateCosts}
                 </button>
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-6 py-3 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 font-medium"
+                  className="bg-gray-400 text-white py-3 px-6 rounded-md hover:bg-gray-500 font-medium"
                 >
-                  Reset
+                  {t.resetForm}
                 </button>
               </div>
             </form>
           </div>
 
-          {/* Results */}
-          {result && (
-            <div className="xl:col-span-1 space-y-6">
-              {/* Key Performance Metrics */}
+          {/* Results Section */}
+          <div className="space-y-6">
+            {result && (
+              <>
+                {/* Key Performance Metrics */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.keyPerformanceMetrics}</h2>
+                  <div className="grid grid-cols-1 gap-4">
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <div className="text-sm text-blue-600 font-medium">{t.feedConversionRatio}</div>
+                      <div className="text-2xl font-bold text-blue-800">{result.feed_conversion_ratio}</div>
+                    </div>
+                    
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <div className="text-sm text-red-600 font-medium">{t.mortalityRate}</div>
+                      <div className="text-2xl font-bold text-red-800">{result.mortality_rate}%</div>
+                    </div>
+                    
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <div className="text-sm text-green-600 font-medium">{t.viabilityRate}</div>
+                      <div className="text-2xl font-bold text-green-800">{result.viability_rate}%</div>
+                    </div>
+                    
+                    <div className="bg-purple-50 p-4 rounded-lg">
+                      <div className="text-sm text-purple-600 font-medium">{t.netCostPerKg}</div>
+                      <div className="text-lg text-purple-600">{t.afterBeddingRevenue}</div>
+                      <div className="text-2xl font-bold text-purple-800">{formatCurrency(result.net_cost_per_kg)}</div>
+                    </div>
+                    
+                    <div className="bg-yellow-50 p-4 rounded-lg">
+                      <div className="text-sm text-yellow-600 font-medium">{t.weightedAvgAge}</div>
+                      <div className="text-2xl font-bold text-yellow-800">{result.weighted_avg_age} {t.days}</div>
+                    </div>
+                    
+                    <div className="bg-indigo-50 p-4 rounded-lg">
+                      <div className="text-sm text-indigo-600 font-medium">{t.dailyWeightGain}</div>
+                      <div className="text-2xl font-bold text-indigo-800">{result.daily_weight_gain} {t.kg}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Production Summary */}
+                <div className="bg-white rounded-xl shadow-lg p-6">
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.productionSummary}</h2>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.batchIdLabel}</span>
+                      <span>{result.batch_id}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.shed}:</span>
+                      <span>{result.shed_number}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.handler}:</span>
+                      <span>{result.handler_name}</span>
+                    </div>
+                    {result.entry_date && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">{t.entryDateLabel}</span>
+                        <span>{new Date(result.entry_date).toLocaleDateString()}</span>
+                      </div>
+                    )}
+                    {result.exit_date && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">{t.exitDateLabel}</span>
+                        <span>{new Date(result.exit_date).toLocaleDateString()}</span>
+                      </div>
+                    )}
+                    {result.batch_duration_days && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">{t.batchDuration}:</span>
+                        <span>{result.batch_duration_days} {t.days}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.survivingChicks}:</span>
+                      <span>{result.surviving_chicks.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.viabilityCaught}:</span>
+                      <span>{result.viability_caught.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.viabilityRateLabel}</span>
+                      <span>{result.viability_rate}%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.missingChicks}:</span>
+                      <span>{result.missing_chicks.toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.totalWeightProduced}:</span>
+                      <span>{result.total_weight_produced} {t.kg}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t.totalFeedConsumed}:</span>
+                      <span>{result.total_feed_consumed} {t.kg}</span>
+                    </div>
+                    {result.bedding_revenue && (
+                      <div className="flex justify-between">
+                        <span className="font-medium">{t.beddingRevenue}:</span>
+                        <span>{formatCurrency(result.bedding_revenue)}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Cost Breakdown Chart */}
+                {result.cost_breakdown && <CostBreakdownChart costBreakdown={result.cost_breakdown} />}
+
+                {/* Business Insights */}
+                {result.business_insights && result.business_insights.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-lg p-6">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.insights}</h2>
+                    <div className="space-y-3">
+                      {result.business_insights.map((insight, index) => (
+                        <div key={index} className="p-3 bg-gray-50 rounded-lg text-sm text-gray-700">
+                          {insight}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* PDF Download Button */}
+                    {result.pdf_filename && (
+                      <div className="mt-4 pt-4 border-t border-gray-200">
+                        <button
+                          onClick={() => downloadPDF(result.pdf_filename)}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium"
+                        >
+                          📄 {t.downloadPDF || "Download PDF Report"}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* Calculation History */}
+            {history.length > 0 && (
               <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Key Performance Metrics</h2>
-                
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-blue-600">Feed Conversion Ratio</h3>
-                    <p className="text-2xl font-bold text-blue-800">{result.calculation.feed_conversion_ratio}</p>
-                  </div>
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-red-600">Mortality Rate</h3>
-                    <p className="text-2xl font-bold text-red-800">{result.calculation.mortality_rate_percent}%</p>
-                  </div>
-                  <div className="bg-orange-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-orange-600">Viability Rate</h3>
-                    <p className="text-2xl font-bold text-orange-800">
-                      {((result.calculation.viability / result.calculation.input_data.initial_chicks) * 100).toFixed(1)}%
-                    </p>
-                    <p className="text-xs text-orange-600">{result.calculation.viability.toLocaleString()} caught</p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-green-600">Net Cost per kg</h3>
-                    <p className="text-2xl font-bold text-green-800">{formatCurrency(result.calculation.net_cost_per_kg)}</p>
-                    <p className="text-xs text-green-600">After bedding revenue</p>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-purple-600">Weighted Avg Age</h3>
-                    <p className="text-2xl font-bold text-purple-800">{result.calculation.weighted_average_age} days</p>
-                  </div>
-                  <div className="bg-yellow-50 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-yellow-600">Daily Weight Gain</h3>
-                    <p className="text-2xl font-bold text-yellow-800">{result.calculation.daily_weight_gain} kg</p>
-                  </div>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">{t.calculationHistory}</h2>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full table-auto">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.batchIdHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.dateHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.shedHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.handlerHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.chicksHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.fcrHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.mortalityPercentHeader}</th>
+                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">{t.costKgHeader}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {history.slice(0, 5).map((calc, index) => (
+                        <tr key={index} className="hover:bg-gray-50">
+                          <td className="px-3 py-2 text-xs font-mono font-semibold text-gray-900">{calc.batch_id}</td>
+                          <td className="px-3 py-2 text-xs text-gray-600">
+                            {new Date(calc.date).toLocaleDateString()}
+                          </td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{calc.shed_number}</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{calc.handler_name}</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{calc.initial_chicks.toLocaleString()}</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{calc.fcr}</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{calc.mortality_percent}%</td>
+                          <td className="px-3 py-2 text-xs text-gray-900">{formatCurrency(calc.cost_per_kg)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              </div>
-
-              {/* Production Summary */}
-              <div className="bg-white rounded-xl shadow-lg p-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4">Production Summary</h2>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Batch ID:</span>
-                    <span className="font-semibold">{result.calculation.input_data.batch_id}</span>
+                {history.length === 0 && (
+                  <div className="text-center py-8 text-gray-500 text-sm">
+                    {t.noHistoryData}
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shed:</span>
-                    <span className="font-semibold">{result.calculation.input_data.shed_number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Handler:</span>
-                    <span className="font-semibold">{result.calculation.input_data.handler_name}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Entry Date:</span>
-                    <span className="font-semibold">
-                      {result.calculation.input_data.entry_date ? 
-                        new Date(result.calculation.input_data.entry_date).toLocaleDateString() : 
-                        'Not set'
-                      }
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Exit Date:</span>
-                    <span className="font-semibold">
-                      {result.calculation.input_data.exit_date ? 
-                        new Date(result.calculation.input_data.exit_date).toLocaleDateString() : 
-                        'Not set'
-                      }
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Batch Duration:</span>
-                    <span className="font-semibold">
-                      {result.calculation.input_data.entry_date && result.calculation.input_data.exit_date ? 
-                        Math.ceil((new Date(result.calculation.input_data.exit_date) - new Date(result.calculation.input_data.entry_date)) / (1000 * 60 * 60 * 24)) + ' days' :
-                        'N/A'
-                      }
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-t pt-2">
-                    <span className="text-gray-600">Initial Chicks:</span>
-                    <span className="font-semibold">{result.calculation.input_data.initial_chicks.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Surviving Chicks:</span>
-                    <span className="font-semibold">{result.calculation.surviving_chicks.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Viability (Caught):</span>
-                    <span className="font-semibold text-green-600">{result.calculation.viability.toLocaleString()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Viability Rate:</span>
-                    <span className="font-semibold text-green-600">
-                      {((result.calculation.viability / result.calculation.input_data.initial_chicks) * 100).toFixed(1)}%
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Missing Chicks:</span>
-                    <span className={`font-semibold ${result.calculation.missing_chicks > 0 ? 'text-red-600' : 'text-green-600'}`}>
-                      {result.calculation.missing_chicks.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between border-t pt-2">
-                    <span className="text-gray-600">Total Weight Produced:</span>
-                    <span className="font-semibold">{result.calculation.total_weight_produced_kg.toLocaleString()} kg</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Total Feed Consumed:</span>
-                    <span className="font-semibold">{result.calculation.total_feed_consumed_kg.toLocaleString()} kg</span>
-                  </div>
-                  {result.calculation.total_revenue > 0 && (
-                    <div className="flex justify-between text-green-600">
-                      <span>Bedding Revenue:</span>
-                      <span className="font-semibold">{formatCurrency(result.calculation.total_revenue)}</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Cost Breakdown Chart */}
-              <CostBreakdownChart costBreakdown={result.calculation.cost_breakdown} />
-            </div>
-          )}
-        </div>
-
-        {/* Performance Tab */}
-        {showPerformanceTab && <HandlerPerformanceTable />}
-
-        {/* Admin Tab */}
-        {showAdminTab && <AdminManagement />}
-
-        {/* Batch Management Tab */}
-        {showBatchManagementTab && <BatchManagement />}
-
-        {/* Full Results Display */}
-        {result && (
-          <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Financial Summary */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Financial Breakdown</h2>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span>Chick Cost:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.chick_cost)} ({result.calculation.cost_breakdown.chick_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Pre-starter Feed:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.pre_starter_cost)} ({result.calculation.cost_breakdown.pre_starter_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Starter Feed:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.starter_cost)} ({result.calculation.cost_breakdown.starter_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Growth Feed:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.growth_cost)} ({result.calculation.cost_breakdown.growth_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Final Feed:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.final_cost)} ({result.calculation.cost_breakdown.final_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Medicine:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.medicine_cost)} ({result.calculation.cost_breakdown.medicine_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Miscellaneous:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.miscellaneous_cost)} ({result.calculation.cost_breakdown.miscellaneous_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Cost Variations:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.cost_variations)} ({result.calculation.cost_breakdown.cost_variations_percent}%)</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sawdust Bedding:</span>
-                  <span className="font-semibold">{formatCurrency(result.calculation.cost_breakdown.sawdust_bedding_cost)} ({result.calculation.cost_breakdown.sawdust_bedding_cost_percent}%)</span>
-                </div>
-                <div className="flex justify-between border-t pt-2 font-bold text-lg">
-                  <span>Total Cost:</span>
-                  <span>{formatCurrency(result.calculation.total_cost)}</span>
-                </div>
-                {result.calculation.total_revenue > 0 && (
-                  <>
-                    <div className="flex justify-between text-green-600">
-                      <span>Bedding Revenue:</span>
-                      <span className="font-semibold">-{formatCurrency(result.calculation.total_revenue)}</span>
-                    </div>
-                    <div className="flex justify-between border-t pt-2 font-bold text-xl text-green-600">
-                      <span>Net Cost:</span>
-                      <span>{formatCurrency(result.calculation.total_cost - result.calculation.total_revenue)}</span>
-                    </div>
-                  </>
                 )}
               </div>
-            </div>
-
-            {/* Business Insights and Downloads */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Business Insights & Reports</h2>
-              
-              {/* Download Section */}
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                <h3 className="text-lg font-semibold text-green-800 mb-2">📄 Batch Reports Available</h3>
-                <div className="flex flex-wrap gap-2">
-                  {result.insights.filter(insight => insight.includes('exported as:')).map((insight, index) => {
-                    const filename = insight.split('as: ')[1].trim();
-                    const isPDF = filename.endsWith('.pdf');
-                    
-                    return (
-                      <button
-                        key={index}
-                        onClick={() => window.open(`${API}/export/${filename}`, '_blank')}
-                        className={`flex items-center px-4 py-2 rounded-md text-sm font-medium ${
-                          isPDF 
-                            ? 'bg-red-600 text-white hover:bg-red-700' 
-                            : 'bg-blue-600 text-white hover:bg-blue-700'
-                        }`}
-                      >
-                        {isPDF ? '📄 Download PDF Report' : '📊 Download JSON Data'}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Business Insights */}
-              <div className="space-y-3">
-                {result.insights.filter(insight => !insight.includes('exported as:')).map((insight, index) => (
-                  <div key={index} className="bg-blue-50 p-3 rounded-lg text-sm">
-                    {insight}
-                  </div>
-                ))}
-              </div>
-            </div>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Calculation History */}
-        {history.length > 0 && (
-          <div className="mt-8 bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">Recent Calculations</h2>
-            <div className="overflow-x-auto">
-              <table className="min-w-full table-auto">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Batch ID</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Shed</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Handler</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Chicks</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">FCR</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Mortality %</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Avg Age</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cost/kg</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {history.slice(0, 10).map((calc, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 text-sm text-gray-600">
-                        {new Date(calc.date).toLocaleDateString()}
-                      </td>
-                      <td className="px-4 py-2 text-sm font-mono text-gray-900">{calc.batch_id}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.shed_number}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.handler_name}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.initial_chicks.toLocaleString()}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.fcr}</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{calc.mortality_percent}%</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">N/A</td>
-                      <td className="px-4 py-2 text-sm text-gray-900">{formatCurrency(calc.cost_per_kg)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+        {/* Handler Performance Table */}
+        <HandlerPerformanceTable />
+
+        {/* Admin Management */}
+        {showAdminTab && <AdminManagement />}
+
+        {/* Batch Management */}
+        {showBatchManagementTab && <BatchManagement />}
       </div>
     </div>
   );
