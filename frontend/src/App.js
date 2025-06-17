@@ -1480,7 +1480,7 @@ function App() {
                           value={formData.growth_cost_per_kg}
                           onChange={handleInputChange}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                          placeholder="e.g., 0.40"
+                          placeholder="ex: 0,40"
                         />
                       </div>
                     </div>
